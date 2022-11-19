@@ -1,0 +1,22 @@
+{
+  "name": "proshop",
+  "version": "1.0.0",
+  "description": "MERN shopping cart app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hugo-ds/MERN-eCommerce-From-Scratch.git"
+  },
+  "author": "Hugo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hugo-ds/MERN-eCommerce-From-Scratch/issues"
+  },
+  "homepage": "https://github.com/hugo-ds/MERN-eCommerce-From-Scratch#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
