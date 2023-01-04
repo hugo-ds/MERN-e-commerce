@@ -8,13 +8,13 @@ import Loader from '../components/Loader'
 import { listProductDetails } from '../actions/productActions'
 
 const ProductScreen = () => {
-    const [qty, setQty] = useState(1)
+    const [qty, setQty] = useState(1) // Set quantity to 1.
     const dispatch = useDispatch()
 
     const productDetails = useSelector((state) => state.productDetails)
     const { loading, error, product } = productDetails
 
-    // Specify key in "let {key}" and get that parameter with "userParams()".
+    // Specify key in "const {key}" and get that parameter with "userParams()".
     const { id } = useParams()
     const navigate = useNavigate()
 
