@@ -34,11 +34,18 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(400) // Bad request
         throw new Error('User already exists')
     }
-    const user = await User.create({
-        name,
-        email,
-        password,
-    })
+
+    let user
+    try {
+        user = await User.create({
+            name,
+            email,
+            password,
+        })
+    } catch (error) {
+        res.status(400)
+        throw new Error('Invalid user data')
+    }
 
     if (user) {
         res.status(201).json({
