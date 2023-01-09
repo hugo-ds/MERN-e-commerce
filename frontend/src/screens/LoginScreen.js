@@ -9,7 +9,9 @@ import { login } from '../actions/userActions'
 
 const LoginScreen = () => {
     const location = useLocation()
-    const redirect = location.search ? location.search.split('=')[1] : '/'
+
+    // Check if there is a query (redirection).
+    const redirect = location.search ? '/' + location.search.split('=')[1] : '/'
 
     const userLogin = useSelector((state) => state.userLogin)
     const { loading, error, userInfo } = userLogin
