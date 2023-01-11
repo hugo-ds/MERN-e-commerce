@@ -18,8 +18,10 @@ app.get('/', (req, res) => {
 
 app.use(express.json())
 
+// Routs
 app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/orders', orderRoutes)
 
 // Error handling
 app.use(notFound)
