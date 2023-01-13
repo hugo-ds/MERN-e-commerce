@@ -59,10 +59,12 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
         }
 
         const { data } = await axios.get(`/api/orders/${id}`, config)
+        const { data: clientId } = await axios.get('/api/config/paypal')
 
         dispatch({
             type: ORDER_DETAILS_SUCCESS,
             payload: data,
+            clientId,
         })
     } catch (error) {
         dispatch({
