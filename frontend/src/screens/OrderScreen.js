@@ -23,11 +23,11 @@ const OrderScreen = () => {
     const dispatch = useDispatch()
     useEffect(() => {
         // If there is no order or payment was successful.
-        if (!order || successPay) {
+        if (!order || order._id !== orderId || successPay) {
             dispatch({ type: ORDER_PAY_RESET })
             dispatch(getOrderDetails(orderId))
         }
-    }, [dispatch, orderId, successPay, order, clientId])
+    }, [dispatch, order, orderId, successPay])
 
     return loading ? (
         <Loader></Loader>
