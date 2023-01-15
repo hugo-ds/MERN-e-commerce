@@ -7,7 +7,7 @@ import Loader from '../components/Loader'
 import { deleteUser, listUsers } from '../actions/userActions'
 import { useNavigate } from 'react-router-dom'
 
-const RegisterScreen = () => {
+const UserListScreen = () => {
     const dispatch = useDispatch()
 
     const userList = useSelector((state) => state.userList)
@@ -87,4 +87,4 @@ const RegisterScreen = () => {
     )
 }
 
-export default RegisterScreen
+export default UserListScreen
