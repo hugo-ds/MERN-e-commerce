@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { productListReducer, productDetailsReducer } from './reducers/productReducers'
+import { productListReducer, productDetailsReducer, productDeleteReducer } from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
 import {
     userLoginReducer,
@@ -15,6 +15,7 @@ import { orderCreateReducer, orderDetailsReducer, orderMyListReducer, orderPayRe
 const reducer = {
     productList: productListReducer,
     productDetails: productDetailsReducer,
+    productDelete: productDeleteReducer,
     cart: cartReducer,
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
