@@ -4,8 +4,9 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listProducts, deleteProduct } from '../actions/productActions'
+import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
 import { useNavigate } from 'react-router-dom'
+import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 
 const ProductListScreen = () => {
     const dispatch = useDispatch()
@@ -18,15 +19,28 @@ const ProductListScreen = () => {
         success: successDelete,
     } = useSelector((state) => state.productDelete)
 
+    const {
+        loading: loadingCreate,
+        error: errorCreate,
+        success: successCreate,
+        product: createdProduct,
+    } = useSelector((state) => state.productCreate)
+
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (userInfo && userInfo.isAdmin) {
-            dispatch(listProducts())
-        } else {
+        dispatch({ type: PRODUCT_CREATE_RESET })
+
+        if (userInfo && !userInfo.isAdmin) {
             navigate('/login')
         }
-    }, [dispatch, navigate, userInfo, successDelete])
+
+        if (successCreate) {
+            navigate(`/admin/product/${createdProduct._id}/edit`)
+        } else {
+            dispatch(listProducts())
+        }
+    }, [dispatch, navigate, userInfo, successDelete, successCreate, createdProduct])
 
     const delteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
@@ -34,8 +48,8 @@ const ProductListScreen = () => {
         }
     }
 
-    const createProductHandler = (product) => {
-        //
+    const createProductHandler = () => {
+        dispatch(createProduct())
     }
 
     return (
@@ -50,6 +64,8 @@ const ProductListScreen = () => {
                     </Button>
                 </Col>
             </Row>
+            {loadingCreate && <Loader></Loader>}
+            {errorCreate && <Message>{errorCreate}</Message>}
             {loadingDelete && <Loader></Loader>}
             {errorDelete && <Message>{errorDelete}</Message>}
             {loading ? (
