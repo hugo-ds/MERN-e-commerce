@@ -7,6 +7,7 @@ import Loader from '../components/Loader'
 import Paginate from '../components/Paginate'
 import { listProducts } from '../actions/productActions'
 import { useParams } from 'react-router-dom'
+import ProductCarousel from '../components/ProductCarousel'
 
 const HomeScreen = () => {
     const { keyword } = useParams()
@@ -26,6 +27,7 @@ const HomeScreen = () => {
 
     return (
         <>
+            {!keyword && <ProductCarousel></ProductCarousel>}
             <h1>Latest Products</h1>
             {loading ? (
                 <Loader />
