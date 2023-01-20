@@ -76,14 +76,14 @@ const PlaceOrderScreen = () => {
                                     {cart.cartItems.map((item, index) => (
                                         <ListGroup.Item key={index}>
                                             <Row>
-                                                <Col md={1}>
+                                                <Col md={2}>
                                                     <Image src={item.image} alt={item.name} fluid rounded></Image>
                                                 </Col>
-                                                <Col>
+                                                <Col md={6}>
                                                     <Link to={`/product/${item.product}`}>{item.name}</Link>
                                                 </Col>
                                                 <Col md={4}>
-                                                    {item.qty} x ${item.price} = ${item.qty * item.price}
+                                                    {item.qty} x ${item.price} = ${(item.qty * item.price).toFixed(2)}
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
