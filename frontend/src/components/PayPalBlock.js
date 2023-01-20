@@ -32,10 +32,8 @@ const PayPalBlock = ({ totalPrice, orderId }) => {
 
     return (
         <ListGroup.Item>
-            {/* Loading script. */}
-            {isPending && <Loader></Loader>}
-            {!isResolved ? (
-                // Wating script load.
+            {isPending || !isResolved ? (
+                // Wating for script load.
                 <Loader></Loader>
             ) : (
                 // Successful script load.
