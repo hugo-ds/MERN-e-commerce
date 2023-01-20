@@ -150,7 +150,7 @@ const ProductScreen = () => {
                                     {errorProductReview && <Message>{errorProductReview}</Message>}
                                     {userInfo ? (
                                         <Form onSubmit={submitHandler}>
-                                            <Form.Group constrolId='rating'>
+                                            <Form.Group controlId='rating'>
                                                 <Form.Label>Rating</Form.Label>
                                                 <Form.Control
                                                     as='select'
