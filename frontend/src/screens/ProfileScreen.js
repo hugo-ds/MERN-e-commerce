@@ -10,24 +10,21 @@ import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 import { listMyOrders } from '../actions/orderActions'
 
 const ProfileScreen = () => {
-    // Get variables from userDetails (state).
-    const userDetails = useSelector((state) => state.userDetails)
-    const { loading, error, user } = userDetails
-
-    // Get userInfo from userLogin (state).
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
-    // Get "success" from userUpdateProfile (state).
-    const userUpdateProfile = useSelector((state) => state.userUpdateProfile)
-    const { success } = userUpdateProfile
-
-    // Get variables from orderMyList (state).
-    const orderMyList = useSelector((state) => state.orderMyList)
-    const { loading: loadingOrders, error: errorOrders, orders } = orderMyList
+    // Get variables from state.
+    const { loading, error, user } = useSelector((state) => state.userDetails)
+    const { userInfo } = useSelector((state) => state.userLogin)
+    const { success } = useSelector((state) => state.userUpdateProfile)
+    const { loading: loadingOrders, error: errorOrders, orders } = useSelector((state) => state.orderMyList)
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+    // Declare state variables. (Rerender when modified.)
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [message, setMessage] = useState(null)
 
     useEffect(() => {
         if (!userInfo) {
@@ -36,20 +33,16 @@ const ProfileScreen = () => {
             if (!user.name || success) {
                 dispatch({ type: USER_UPDATE_PROFILE_RESET })
                 dispatch(getUserDetails('profile'))
-                dispatch(listMyOrders())
             } else {
                 setName(user.name)
                 setEmail(user.email)
             }
+
+            dispatch(listMyOrders())
         }
     }, [userInfo, success, user, navigate, dispatch])
 
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [message, setMessage] = useState(null)
-
+    // Click update button.
     const submitHandler = (e) => {
         e.preventDefault()
         if (password !== confirmPassword) {
