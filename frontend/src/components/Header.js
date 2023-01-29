@@ -8,8 +8,10 @@ const Header = () => {
     const dispatch = useDispatch()
 
     // Use "useSelector" to extract data from the "state".
+    // If userInfo exists, user is logged in.
     const { userInfo } = useSelector((state) => state.userLogin)
 
+    // Called when user click logout button.
     const logoutHandler = () => {
         dispatch(logout())
     }
@@ -24,17 +26,21 @@ const Header = () => {
 
                     <Navbar.Toggle aria-controls='basic-navbar-nav' />
                     <Navbar.Collapse id='basic-navbar-nav'>
+                        {/* Search bar. */}
                         <Col className='col'>
                             <SearchBox></SearchBox>
                         </Col>
                         <Col className='col-auto'>
                             <Nav>
+                                {/* Cart link. */}
                                 <LinkContainer to='/cart'>
                                     <Nav.Link href='/cart'>
                                         <i className='fas fa-shopping-cart'></i> Cart
                                     </Nav.Link>
                                 </LinkContainer>
+                                {/* User menu link. */}
                                 {userInfo ? (
+                                    // If user is logged in, show user menu.
                                     <NavDropdown
                                         className='mr-auto'
                                         title={
@@ -48,6 +54,7 @@ const Header = () => {
                                             <NavDropdown.Item>Profile</NavDropdown.Item>
                                         </LinkContainer>
                                         {userInfo && userInfo.isAdmin && (
+                                            // If user is admin. Show admin menu too.
                                             <>
                                                 <NavDropdown.Divider />
                                                 <LinkContainer to='/admin/userlist'>
@@ -65,6 +72,7 @@ const Header = () => {
                                         <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
                                     </NavDropdown>
                                 ) : (
+                                    // If user isn't logged in, show sign in link.
                                     <LinkContainer to='/login'>
                                         <Nav.Link href='/login'>
                                             <i className='fas fa-user'></i> Sign In

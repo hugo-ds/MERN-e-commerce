@@ -27,6 +27,7 @@ import {
     orderListReducer,
 } from './reducers/orderReducers'
 
+// Reducers: receive store and action, and modify the store.
 const reducer = {
     productList: productListReducer,
     productDetails: productDetailsReducer,

@@ -11,6 +11,7 @@ export const cartReducer = (state = { cartItems: [], shippingAddress: {} }, acti
             const item = action.payload
             const existItem = state.cartItems.find((x) => x.product === item.product)
 
+            // If item already exists, update it. Else add it.
             if (existItem) {
                 return {
                     ...state,
@@ -22,22 +23,26 @@ export const cartReducer = (state = { cartItems: [], shippingAddress: {} }, acti
                     cartItems: [...state.cartItems, item],
                 }
             }
+
         case CART_REMOVE_ITEM:
             return {
                 ...state,
                 // Remove the product (action.payload)
                 cartItems: state.cartItems.filter((x) => x.product !== action.payload),
             }
+
         case CART_SAVE_SHIPPING_ADDRESS:
             return {
                 ...state,
                 shippingAddress: action.payload, // Data from the form
             }
+
         case CART_SAVE_PAYMENT_METHOD:
             return {
                 ...state,
                 paymentMethod: action.payload,
             }
+
         default:
             return state
     }
