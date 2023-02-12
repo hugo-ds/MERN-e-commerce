@@ -5,9 +5,8 @@ import { Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap'
 import Rating from '../components/Rating'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { createProductReview, listProductDetails } from '../actions/productActions'
-import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants'
 import Meta from '../components/Meta'
+import { listProductDetails, resetProductCreateReview, createProductReview } from '../slices/productSlice'
 
 const ProductScreen = () => {
     const [qty, setQty] = useState(1) // Set quantity to 1.
@@ -32,7 +31,7 @@ const ProductScreen = () => {
             alert('Review submitted.')
             setRating(0)
             setComment('')
-            dispatch({ type: PRODUCT_CREATE_REVIEW_RESET })
+            dispatch(resetProductCreateReview())
         }
         dispatch(listProductDetails(id))
     }, [dispatch, id, successProductReview])
@@ -44,9 +43,12 @@ const ProductScreen = () => {
     const submitHandler = (e) => {
         e.preventDefault()
         dispatch(
-            createProductReview(id, {
-                rating,
-                comment,
+            createProductReview({
+                id,
+                review: {
+                    rating,
+                    comment,
+                },
             })
         )
     }

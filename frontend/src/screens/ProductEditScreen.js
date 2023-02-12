@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { listProductDetails, updateProduct } from '../actions/productActions'
-import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
+import { listProductDetails, resetProductUpdate, updateProduct } from '../slices/productSlice'
 
 const ProductEditScreen = () => {
     const { id: productId } = useParams()
@@ -32,7 +31,7 @@ const ProductEditScreen = () => {
 
     useEffect(() => {
         if (successUpdate) {
-            dispatch({ type: PRODUCT_UPDATE_RESET })
+            dispatch(resetProductUpdate())
             navigate('/admin/productlist')
         } else {
             if (!product.name || product._id !== productId) {

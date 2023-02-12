@@ -1,13 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit'
-import {
-    productListReducer,
-    productDetailsReducer,
-    productDeleteReducer,
-    productCreateReducer,
-    productUpdateReducer,
-    productCreateReviewReducer,
-    productTopRatedReducer,
-} from './reducers/productReducers'
 import { cartReducer } from './reducers/cartReducers'
 import {
     userLoginReducer,
@@ -26,16 +17,25 @@ import {
     orderDeliverReducer,
     orderListReducer,
 } from './reducers/orderReducers'
+import {
+    productDetailsSlice,
+    productListSlice,
+    productDeleteSlice,
+    productCreateSlice,
+    productUpdateSlice,
+    productCreateReviewSlice,
+    productTopRatedSlice,
+} from './slices/productSlice'
 
 // Reducers: receive store and action, and modify the store.
 const reducer = {
-    productList: productListReducer,
-    productDetails: productDetailsReducer,
-    productDelete: productDeleteReducer,
-    productCreate: productCreateReducer,
-    productUpdate: productUpdateReducer,
-    productCreateReview: productCreateReviewReducer,
-    productTopRated: productTopRatedReducer,
+    productList: productListSlice.reducer,
+    productDetails: productDetailsSlice.reducer,
+    productDelete: productDeleteSlice.reducer,
+    productCreate: productCreateSlice.reducer,
+    productUpdate: productUpdateSlice.reducer,
+    productCreateReview: productCreateReviewSlice.reducer,
+    productTopRated: productTopRatedSlice.reducer,
     cart: cartReducer,
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
