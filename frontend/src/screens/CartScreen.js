@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap'
 import Message from '../components/Message'
-import { addToCart, removeFromCart } from '../actions/cartActions'
+import { addToCart, removeFromCart } from '../slices/cartSlice'
 
 const CartScreen = () => {
     const navigate = useNavigate()
@@ -22,7 +22,7 @@ const CartScreen = () => {
 
     useEffect(() => {
         if (productId) {
-            dispatch(addToCart(productId, qty))
+            dispatch(addToCart({ productId, qty }))
         }
     }, [dispatch, productId, qty])
 
@@ -58,7 +58,11 @@ const CartScreen = () => {
                                         <Form.Control
                                             as='select'
                                             value={item.qty}
-                                            onChange={(e) => dispatch(addToCart(item.product, Number(e.target.value)))}
+                                            onChange={(e) =>
+                                                dispatch(
+                                                    addToCart({ productId: item.product, qty: Number(e.target.value) })
+                                                )
+                                            }
                                         >
                                             {[...Array(item.countInStock).keys()].map((x) => (
                                                 <option key={x + 1} value={x + 1}>
