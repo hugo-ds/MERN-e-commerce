@@ -2,7 +2,7 @@ import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import { ListGroup } from 'react-bootstrap'
 import Loader from '../components/Loader'
 import { useDispatch } from 'react-redux'
-import { payOrder } from '../actions/orderActions'
+import { payOrder } from '../slices/orderSlice'
 
 const PayPalBlock = ({ totalPrice, orderId }) => {
     // Paypal button related.
@@ -26,7 +26,7 @@ const PayPalBlock = ({ totalPrice, orderId }) => {
     // After successful payment.
     const onApproveOrder = (data, actions) => {
         return actions.order.capture().then((details) => {
-            dispatch(payOrder(orderId, details))
+            dispatch(payOrder({ orderId: orderId, paymentResult: details }))
         })
     }
 

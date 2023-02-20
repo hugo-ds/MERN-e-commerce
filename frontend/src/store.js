@@ -9,13 +9,13 @@ import {
     userUpdateReducer,
 } from './reducers/userReducers'
 import {
-    orderCreateReducer,
-    orderDetailsReducer,
-    orderMyListReducer,
-    orderPayReducer,
-    orderDeliverReducer,
-    orderListReducer,
-} from './reducers/orderReducers'
+    orderCreateSlice,
+    orderDetailsSlice,
+    orderMyListSlice,
+    orderPaySlice,
+    orderDeliverSlice,
+    orderListSlice,
+} from './slices/orderSlice'
 import {
     productDetailsSlice,
     productListSlice,
@@ -46,12 +46,13 @@ const reducer = {
     userList: userListReducer,
     userDelete: userDeleteReducer,
     userUpdate: userUpdateReducer,
-    orderCreate: orderCreateReducer,
-    orderDetails: orderDetailsReducer,
-    orderPay: orderPayReducer,
-    orderDeliver: orderDeliverReducer,
-    orderMyList: orderMyListReducer,
-    orderList: orderListReducer,
+
+    orderCreate: orderCreateSlice.reducer,
+    orderDetails: orderDetailsSlice.reducer,
+    orderPay: orderPaySlice.reducer,
+    orderDeliver: orderDeliverSlice.reducer,
+    orderMyList: orderMyListSlice.reducer,
+    orderList: orderListSlice.reducer,
 }
 
 const cartItemsFromStorage = localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : []

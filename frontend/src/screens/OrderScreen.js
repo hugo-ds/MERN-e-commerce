@@ -4,24 +4,22 @@ import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
-import { deliverOrder, getOrderDetails } from '../actions/orderActions'
-import { ORDER_DELIVER_RESET, ORDER_PAY_RESET } from '../constants/orderConstants'
 import PayPalBlock from '../components/PayPalBlock'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
+import { deliverOrder, getOrderDetails, resetOrderDeliver, resetOrderPay } from '../slices/orderSlice'
 
 const OrderScreen = () => {
     const { id: orderId } = useParams()
 
+    // Extract data from state.
     const { order, loading, error, clientId } = useSelector((state) => state.orderDetails)
-
-    // Rename loading to loadingPay and success to successPay
-    const { success: successPay } = useSelector((state) => state.orderPay)
-
+    const { success: successPay } = useSelector((state) => state.orderPay) // Rename extracted variable.
     const { loading: loadingDeliver, success: successDeliver } = useSelector((state) => state.orderDeliver)
     const { userInfo } = useSelector((state) => state.userLogin)
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
     useEffect(() => {
         // Force login.
         if (!userInfo) {
@@ -29,8 +27,8 @@ const OrderScreen = () => {
         }
         // If there is no order, or payment or deliver was successful.
         if (!order || order._id !== orderId || successPay || successDeliver) {
-            dispatch({ type: ORDER_PAY_RESET })
-            dispatch({ type: ORDER_DELIVER_RESET })
+            dispatch(resetOrderPay())
+            dispatch(resetOrderDeliver())
             dispatch(getOrderDetails(orderId))
         }
     }, [navigate, userInfo, dispatch, order, orderId, successPay, successDeliver])
