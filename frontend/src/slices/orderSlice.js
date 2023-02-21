@@ -1,16 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import store from '../store'
 
 //================================================================================================================
 //  Create an order
 //================================================================================================================
 
-export const createOrder = createAsyncThunk('order/createOrder', async (order, { rejectWithValue }) => {
+export const createOrder = createAsyncThunk('order/createOrder', async (order, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -68,11 +67,11 @@ export const { resetOrderCreate } = orderCreateSlice.actions
 //  Get order details.
 //================================================================================================================
 
-export const getOrderDetails = createAsyncThunk('order/getOrderDetails', async (id, { rejectWithValue }) => {
+export const getOrderDetails = createAsyncThunk('order/getOrderDetails', async (id, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -123,13 +122,13 @@ export const orderDetailsSlice = createSlice({
 //  Pay an order.
 //================================================================================================================
 
-export const payOrder = createAsyncThunk('order/payOrder', async (param, { rejectWithValue }) => {
+export const payOrder = createAsyncThunk('order/payOrder', async (param, { rejectWithValue, getState }) => {
     const { orderId, paymentResult } = param
 
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -184,11 +183,11 @@ export const { resetOrderPay } = orderPaySlice.actions
 //  Deliver an order.
 //================================================================================================================
 
-export const deliverOrder = createAsyncThunk('order/deliverOrder', async (order, { rejectWithValue }) => {
+export const deliverOrder = createAsyncThunk('order/deliverOrder', async (order, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -242,11 +241,11 @@ export const { resetOrderDeliver } = orderDeliverSlice.actions
 //  List my order list.
 //================================================================================================================
 
-export const listMyOrders = createAsyncThunk('order/listMyOrders', async (_, { rejectWithValue }) => {
+export const listMyOrders = createAsyncThunk('order/listMyOrders', async (_, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -300,11 +299,11 @@ export const { resetOrderMyList } = orderMyListSlice.actions
 //  List all orders.
 //================================================================================================================
 
-export const listOrders = createAsyncThunk('order/listOrders', async (_, { rejectWithValue }) => {
+export const listOrders = createAsyncThunk('order/listOrders', async (_, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {

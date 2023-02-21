@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
-import store from '../store'
 
 //================================================================================================================
 //  List products
@@ -99,11 +98,11 @@ export const { setProductDetails } = productDetailsSlice.actions
 //  Delete a product
 //================================================================================================================
 
-export const deleteProduct = createAsyncThunk('product/deleteProduct', async (id, { rejectWithValue }) => {
+export const deleteProduct = createAsyncThunk('product/deleteProduct', async (id, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -147,11 +146,11 @@ export const productDeleteSlice = createSlice({
 //  Create a product
 //================================================================================================================
 
-export const createProduct = createAsyncThunk('product/createProduct', async (_, { rejectWithValue }) => {
+export const createProduct = createAsyncThunk('product/createProduct', async (_, { rejectWithValue, getState }) => {
     try {
         const {
             userLogin: { userInfo },
-        } = store.getState()
+        } = getState()
 
         const config = {
             headers: {
@@ -210,11 +209,11 @@ export const { resetProductCreate } = productCreateSlice.actions
 
 export const updateProduct = createAsyncThunk(
     'product/updateProduct',
-    async (product, { rejectWithValue, dispatch }) => {
+    async (product, { rejectWithValue, dispatch, getState }) => {
         try {
             const {
                 userLogin: { userInfo },
-            } = store.getState()
+            } = getState()
 
             const config = {
                 headers: {
@@ -278,13 +277,13 @@ export const { resetProductUpdate } = productUpdateSlice.actions
 
 export const createProductReview = createAsyncThunk(
     'product/createProductReview',
-    async (param, { rejectWithValue }) => {
+    async (param, { rejectWithValue, getState }) => {
         const { id, review } = param
 
         try {
             const {
                 userLogin: { userInfo },
-            } = store.getState()
+            } = getState()
 
             const config = {
                 headers: {
