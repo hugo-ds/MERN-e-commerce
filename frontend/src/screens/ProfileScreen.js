@@ -5,8 +5,7 @@ import { Form, Button, Row, Col, Table } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getUserDetails, updateUserProfile } from '../actions/userActions'
-import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
+import { getUserDetails, resetUserUpdateProfile, updateUserProfile } from '../slices/userSlice'
 import { listMyOrders } from '../slices/orderSlice'
 
 const ProfileScreen = () => {
@@ -19,7 +18,7 @@ const ProfileScreen = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-    // Declare state variables. (Rerender when modified.)
+    // Declare state variables. (Rerender happens when it's modified.)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -30,8 +29,8 @@ const ProfileScreen = () => {
         if (!userInfo) {
             navigate('/login')
         } else {
-            if (!user.name || success) {
-                dispatch({ type: USER_UPDATE_PROFILE_RESET })
+            if (!user || !user.name || success) {
+                dispatch(resetUserUpdateProfile())
                 dispatch(getUserDetails('profile'))
             } else {
                 setName(user.name)

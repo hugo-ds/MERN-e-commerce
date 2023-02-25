@@ -5,15 +5,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { register } from '../actions/userActions'
+import { register } from '../slices/userSlice'
 
 const RegisterScreen = () => {
     const location = useLocation()
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
     // Extract user login data from the "state".
-    const userRegister = useSelector((state) => state.userRegister)
-    const { loading, error, userInfo } = userRegister
+    const { loading, error, userInfo } = useSelector((state) => state.userRegister)
 
     const navigate = useNavigate()
     useEffect(() => {
@@ -35,7 +34,7 @@ const RegisterScreen = () => {
         if (password !== confirmPassword) {
             setMessage('Passwords do not match')
         } else {
-            dispatch(register(name, email, password))
+            dispatch(register({ name, email, password }))
         }
     }
 

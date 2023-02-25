@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { getUserDetails, updateUser } from '../actions/userActions'
-import { USER_UPDATE_RESET } from '../constants/userConstants'
+import { getUserDetails, resetUserUpdate, updateUser } from '../slices/userSlice'
 
 const UserEditScreen = () => {
     const { id: userId } = useParams()
@@ -25,10 +24,10 @@ const UserEditScreen = () => {
 
     useEffect(() => {
         if (successUpdate) {
-            dispatch({ type: USER_UPDATE_RESET })
+            dispatch(resetUserUpdate())
             navigate('/admin/userlist')
         } else {
-            if (!user.name || user._id !== userId) {
+            if (!user || !user.name || user._id !== userId) {
                 dispatch(getUserDetails(userId))
             } else {
                 setName(user.name)

@@ -1,13 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import {
-    userLoginReducer,
-    userRegisterReducer,
-    userDetailsReducer,
-    userUpdateProfileReducer,
-    userListReducer,
-    userDeleteReducer,
-    userUpdateReducer,
-} from './reducers/userReducers'
+    userLoginSlice,
+    userRegisterSlice,
+    userDetailsSlice,
+    userUpdateProfileSlice,
+    userListSlice,
+    userDeleteSlice,
+    userUpdateSlice,
+} from './slices/userSlice'
 import {
     orderCreateSlice,
     orderDetailsSlice,
@@ -39,13 +39,13 @@ const reducer = {
 
     cart: cartSlice.reducer,
 
-    userLogin: userLoginReducer,
-    userRegister: userRegisterReducer,
-    userDetails: userDetailsReducer,
-    userUpdateProfile: userUpdateProfileReducer,
-    userList: userListReducer,
-    userDelete: userDeleteReducer,
-    userUpdate: userUpdateReducer,
+    userLogin: userLoginSlice.reducer,
+    userRegister: userRegisterSlice.reducer,
+    userDetails: userDetailsSlice.reducer,
+    userUpdateProfile: userUpdateProfileSlice.reducer,
+    userList: userListSlice.reducer,
+    userDelete: userDeleteSlice.reducer,
+    userUpdate: userUpdateSlice.reducer,
 
     orderCreate: orderCreateSlice.reducer,
     orderDetails: orderDetailsSlice.reducer,
