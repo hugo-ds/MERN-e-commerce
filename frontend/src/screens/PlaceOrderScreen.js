@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import CheckoutSteps from '../components/CheckoutSteps'
 import Message from '../components/Message'
 import { createOrder, resetOrderCreate } from '../slices/orderSlice'
+import { resetCart } from '../slices/cartSlice'
 
 const PlaceOrderScreen = () => {
     const cart = useSelector((state) => state.cart)
@@ -28,6 +29,7 @@ const PlaceOrderScreen = () => {
     useEffect(() => {
         if (success) {
             dispatch(resetOrderCreate())
+            dispatch(resetCart())
             navigate(`/order/${order._id}`)
         }
         // eslint-disable-next-line

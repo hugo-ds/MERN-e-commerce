@@ -60,7 +60,12 @@ export const cartSlice = createSlice({
             state.paymentMethod = action.payload
             localStorage.setItem('paymentMethod', JSON.stringify(state.paymentMethod))
         },
+
+        resetCart: (state) => {
+            state.cartItems = []
+            localStorage.setItem('cartItems', JSON.stringify(state.cartItems))
+        },
     },
 })
 
-export const { addItem, removeFromCart, saveShippingAddress, savePaymentMethod } = cartSlice.actions
+export const { addItem, removeFromCart, saveShippingAddress, savePaymentMethod, resetCart } = cartSlice.actions
