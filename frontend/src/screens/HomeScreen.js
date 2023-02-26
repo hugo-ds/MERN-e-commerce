@@ -1,30 +1,26 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'react-bootstrap'
+import { useParams, Link } from 'react-router-dom'
 import Product from '../components/Product'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import Paginate from '../components/Paginate'
-import { listProducts } from '../actions/productActions'
-import { useParams } from 'react-router-dom'
 import ProductCarousel from '../components/ProductCarousel'
 import Meta from '../components/Meta'
-import { Link } from 'react-router-dom'
+import { listProducts } from '../slices/productSlice'
 
 const HomeScreen = () => {
     const { keyword } = useParams()
 
-    let { pageNumber } = useParams()
-    if (!pageNumber) {
-        pageNumber = 1
-    }
+    let { pageNumber = 1 } = useParams()
 
     const { loading, error, products, pages, page } = useSelector((state) => state.productList)
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(listProducts(keyword, pageNumber))
+        dispatch(listProducts({ keyword, pageNumber }))
     }, [dispatch, keyword, pageNumber])
 
     return (

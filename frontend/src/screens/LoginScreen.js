@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { login } from '../actions/userActions'
+import { login } from '../slices/userSlice'
 
 const LoginScreen = () => {
     const location = useLocation()
@@ -30,7 +30,7 @@ const LoginScreen = () => {
     const submitHandler = (e) => {
         e.preventDefault()
 
-        dispatch(login(email, password))
+        dispatch(login({ email, password }))
     }
 
     return (

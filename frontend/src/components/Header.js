@@ -1,8 +1,9 @@
 import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '../actions/userActions'
 import { SearchBox } from './SearchBox'
+import { logoutUser, resetUserDetails, resetUserList } from '../slices/userSlice'
+import { resetOrderMyList } from '../slices/orderSlice'
 
 const Header = () => {
     const dispatch = useDispatch()
@@ -13,7 +14,11 @@ const Header = () => {
 
     // Called when user click logout button.
     const logoutHandler = () => {
-        dispatch(logout())
+        localStorage.removeItem('userInfo')
+        dispatch(logoutUser())
+        dispatch(resetUserDetails())
+        dispatch(resetOrderMyList())
+        dispatch(resetUserList())
     }
 
     return (

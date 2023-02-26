@@ -4,8 +4,7 @@ import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import CheckoutSteps from '../components/CheckoutSteps'
 import Message from '../components/Message'
-import { createOrder } from '../actions/orderActions'
-import { ORDER_CREATE_RESET } from '../constants/orderConstants'
+import { createOrder, resetOrderCreate } from '../slices/orderSlice'
 
 const PlaceOrderScreen = () => {
     const cart = useSelector((state) => state.cart)
@@ -28,7 +27,7 @@ const PlaceOrderScreen = () => {
 
     useEffect(() => {
         if (success) {
-            dispatch({ type: ORDER_CREATE_RESET })
+            dispatch(resetOrderCreate())
             navigate(`/order/${order._id}`)
         }
         // eslint-disable-next-line

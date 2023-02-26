@@ -1,55 +1,58 @@
 import { configureStore } from '@reduxjs/toolkit'
 import {
-    productListReducer,
-    productDetailsReducer,
-    productDeleteReducer,
-    productCreateReducer,
-    productUpdateReducer,
-    productCreateReviewReducer,
-    productTopRatedReducer,
-} from './reducers/productReducers'
-import { cartReducer } from './reducers/cartReducers'
+    userLoginSlice,
+    userRegisterSlice,
+    userDetailsSlice,
+    userUpdateProfileSlice,
+    userListSlice,
+    userDeleteSlice,
+    userUpdateSlice,
+} from './slices/userSlice'
 import {
-    userLoginReducer,
-    userRegisterReducer,
-    userDetailsReducer,
-    userUpdateProfileReducer,
-    userListReducer,
-    userDeleteReducer,
-    userUpdateReducer,
-} from './reducers/userReducers'
+    orderCreateSlice,
+    orderDetailsSlice,
+    orderMyListSlice,
+    orderPaySlice,
+    orderDeliverSlice,
+    orderListSlice,
+} from './slices/orderSlice'
 import {
-    orderCreateReducer,
-    orderDetailsReducer,
-    orderMyListReducer,
-    orderPayReducer,
-    orderDeliverReducer,
-    orderListReducer,
-} from './reducers/orderReducers'
+    productDetailsSlice,
+    productListSlice,
+    productDeleteSlice,
+    productCreateSlice,
+    productUpdateSlice,
+    productCreateReviewSlice,
+    productTopRatedSlice,
+} from './slices/productSlice'
+import { cartSlice } from './slices/cartSlice'
 
 // Reducers: receive store and action, and modify the store.
 const reducer = {
-    productList: productListReducer,
-    productDetails: productDetailsReducer,
-    productDelete: productDeleteReducer,
-    productCreate: productCreateReducer,
-    productUpdate: productUpdateReducer,
-    productCreateReview: productCreateReviewReducer,
-    productTopRated: productTopRatedReducer,
-    cart: cartReducer,
-    userLogin: userLoginReducer,
-    userRegister: userRegisterReducer,
-    userDetails: userDetailsReducer,
-    userUpdateProfile: userUpdateProfileReducer,
-    userList: userListReducer,
-    userDelete: userDeleteReducer,
-    userUpdate: userUpdateReducer,
-    orderCreate: orderCreateReducer,
-    orderDetails: orderDetailsReducer,
-    orderPay: orderPayReducer,
-    orderDeliver: orderDeliverReducer,
-    orderMyList: orderMyListReducer,
-    orderList: orderListReducer,
+    productList: productListSlice.reducer,
+    productDetails: productDetailsSlice.reducer,
+    productDelete: productDeleteSlice.reducer,
+    productCreate: productCreateSlice.reducer,
+    productUpdate: productUpdateSlice.reducer,
+    productCreateReview: productCreateReviewSlice.reducer,
+    productTopRated: productTopRatedSlice.reducer,
+
+    cart: cartSlice.reducer,
+
+    userLogin: userLoginSlice.reducer,
+    userRegister: userRegisterSlice.reducer,
+    userDetails: userDetailsSlice.reducer,
+    userUpdateProfile: userUpdateProfileSlice.reducer,
+    userList: userListSlice.reducer,
+    userDelete: userDeleteSlice.reducer,
+    userUpdate: userUpdateSlice.reducer,
+
+    orderCreate: orderCreateSlice.reducer,
+    orderDetails: orderDetailsSlice.reducer,
+    orderPay: orderPaySlice.reducer,
+    orderDeliver: orderDeliverSlice.reducer,
+    orderMyList: orderMyListSlice.reducer,
+    orderList: orderListSlice.reducer,
 }
 
 const cartItemsFromStorage = localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : []

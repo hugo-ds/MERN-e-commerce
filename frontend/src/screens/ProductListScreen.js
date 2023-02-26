@@ -4,10 +4,9 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
 import { useNavigate, useParams } from 'react-router-dom'
-import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
 import Paginate from '../components/Paginate'
+import { listProducts, deleteProduct, createProduct, resetProductCreate } from '../slices/productSlice'
 
 const ProductListScreen = () => {
     const dispatch = useDispatch()
@@ -29,13 +28,10 @@ const ProductListScreen = () => {
 
     const navigate = useNavigate()
 
-    let { pageNumber } = useParams()
-    if (!pageNumber) {
-        pageNumber = 1
-    }
+    let { pageNumber = 1 } = useParams()
 
     useEffect(() => {
-        dispatch({ type: PRODUCT_CREATE_RESET })
+        dispatch(resetProductCreate)
 
         if (userInfo && !userInfo.isAdmin) {
             navigate('/login')
@@ -44,7 +40,7 @@ const ProductListScreen = () => {
         if (successCreate) {
             navigate(`/admin/product/${createdProduct._id}/edit`)
         } else {
-            dispatch(listProducts('', pageNumber))
+            dispatch(listProducts({ keyword: '', pageNumber }))
         }
     }, [dispatch, navigate, userInfo, successDelete, successCreate, createdProduct, pageNumber])
 
