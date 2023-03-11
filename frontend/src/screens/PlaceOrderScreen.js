@@ -20,8 +20,7 @@ const PlaceOrderScreen = () => {
     const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)))
     const totalPrice = (Number(itemsPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2)
 
-    const orderCreate = useSelector((state) => state.orderCreate)
-    const { order, success, error } = orderCreate
+    const { order, success, error } = useSelector((state) => state.orderCreate)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -32,8 +31,7 @@ const PlaceOrderScreen = () => {
             dispatch(resetCart())
             navigate(`/order/${order._id}`)
         }
-        // eslint-disable-next-line
-    }, [dispatch, navigate, success])
+    }, [dispatch, navigate, success, order._id])
 
     const placeOrderHandler = () => {
         dispatch(

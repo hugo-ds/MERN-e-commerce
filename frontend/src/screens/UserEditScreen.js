@@ -10,8 +10,7 @@ import { getUserDetails, resetUserUpdate, updateUser } from '../slices/userSlice
 const UserEditScreen = () => {
     const { id: userId } = useParams()
 
-    const userDetails = useSelector((state) => state.userDetails)
-    const { loading, error, user } = userDetails
+    const { loading, error, user } = useSelector((state) => state.userDetails)
 
     const {
         loading: loadingUpdate,

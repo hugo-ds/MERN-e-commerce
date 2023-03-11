@@ -8,17 +8,11 @@ import Loader from '../components/Loader'
 import { deleteUser, listUsers } from '../slices/userSlice'
 
 const UserListScreen = () => {
+    const { loading, error, users } = useSelector((state) => state.userList)
+    const { userInfo } = useSelector((state) => state.userLogin)
+    const { success } = useSelector((state) => state.userDelete)
+
     const dispatch = useDispatch()
-
-    const userList = useSelector((state) => state.userList)
-    const { loading, error, users } = userList
-
-    const userLogin = useSelector((state) => state.userLogin)
-    const { userInfo } = userLogin
-
-    const userDelete = useSelector((state) => state.userDelete)
-    const { success } = userDelete
-
     const navigate = useNavigate()
 
     useEffect(() => {
