@@ -7,24 +7,32 @@ import Loader from '../components/Loader'
 import { useNavigate, useParams } from 'react-router-dom'
 import Paginate from '../components/Paginate'
 import { listProducts, deleteProduct, createProduct, resetProductCreate } from '../slices/productSlice'
+import { useCreateOrderMutation, useCreateProductMutation, useDeleteProductMutation } from '../services/api'
 
 const ProductListScreen = () => {
     const dispatch = useDispatch()
 
     const { loading, error, products, page, pages } = useSelector((state) => state.productList)
     const { userInfo } = useSelector((state) => state.userLogin)
-    const {
-        loading: loadingDelete,
-        error: errorDelete,
-        success: successDelete,
-    } = useSelector((state) => state.productDelete)
+    // const {
+    //     loading: loadingDelete,
+    //     error: errorDelete,
+    //     success: successDelete,
+    // } = useSelector((state) => state.productDelete)
 
-    const {
-        loading: loadingCreate,
-        error: errorCreate,
-        success: successCreate,
-        product: createdProduct,
-    } = useSelector((state) => state.productCreate)
+    const [deleteProduct, { isLoading: loadingDelete, isError: errorDelete, isSuccess: successDelete }] =
+        useDeleteProductMutation()
+
+    // const {
+    //     loading: loadingCreate,
+    //     error: errorCreate,
+    //     success: successCreate,
+    //     product: createdProduct,
+    // } = useSelector((state) => state.productCreate)
+    const [
+        createProduct,
+        { isLoading: loadingCreate, isError: errorCreate, isSuccess: successCreate, data: createdProduct },
+    ] = useCreateProductMutation()
 
     const navigate = useNavigate()
 
@@ -46,12 +54,14 @@ const ProductListScreen = () => {
 
     const delteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
-            dispatch(deleteProduct(id))
+            // dispatch(deleteProduct(id))
+            deleteProduct(id)
         }
     }
 
     const createProductHandler = () => {
-        dispatch(createProduct())
+        // dispatch(createProduct())
+        createProduct()
     }
 
     return (
@@ -96,11 +106,13 @@ const ProductListScreen = () => {
                                     <td>{product.category}</td>
                                     <td>{product.brand}</td>
                                     <td>
+                                        {/* Product edit button */}
                                         <LinkContainer to={`/admin/product/${product._id}/edit`}>
                                             <Button variant='dark' className='btn-sm'>
                                                 <i className='fas fa-edit'></i>
                                             </Button>
                                         </LinkContainer>
+                                        {/* Product delete button */}
                                         <Button
                                             variant='danger'
                                             className='btn-sm'

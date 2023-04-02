@@ -6,6 +6,7 @@ import CheckoutSteps from '../components/CheckoutSteps'
 import Message from '../components/Message'
 import { createOrder, resetOrderCreate } from '../slices/orderSlice'
 import { resetCart } from '../slices/cartSlice'
+import { useCreateOrderMutation } from '../services/api'
 
 const PlaceOrderScreen = () => {
     const cart = useSelector((state) => state.cart)
@@ -20,31 +21,32 @@ const PlaceOrderScreen = () => {
     const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)))
     const totalPrice = (Number(itemsPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2)
 
-    const { order, success, error } = useSelector((state) => state.orderCreate)
+    // const { order, success, error } = useSelector((state) => state.orderCreate)
+    const [createOrder, { data: order, isSuccess: success, isError: error }] = useCreateOrderMutation()
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (success) {
+        if (order && success) {
             dispatch(resetOrderCreate())
             dispatch(resetCart())
             navigate(`/order/${order._id}`)
         }
-    }, [dispatch, navigate, success, order._id])
+    }, [dispatch, navigate, success, order])
 
     const placeOrderHandler = () => {
-        dispatch(
-            createOrder({
-                orderItems: cart.cartItems,
-                shippingAddress: cart.shippingAddress,
-                paymentMethod: cart.paymentMethod,
-                itemsPrice: itemsPrice,
-                shippingPrice: shippingPrice,
-                taxPrice: taxPrice,
-                totalPrice: totalPrice,
-            })
-        )
+        // dispatch(
+        createOrder({
+            orderItems: cart.cartItems,
+            shippingAddress: cart.shippingAddress,
+            paymentMethod: cart.paymentMethod,
+            itemsPrice: itemsPrice,
+            shippingPrice: shippingPrice,
+            taxPrice: taxPrice,
+            totalPrice: totalPrice,
+        })
+        // )
     }
     return (
         <>

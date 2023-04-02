@@ -6,11 +6,13 @@ import { useNavigate } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { listOrders } from '../slices/orderSlice'
+import { useListOrdersQuery } from '../services/api'
 
 const OrderListScreen = () => {
     const dispatch = useDispatch()
 
-    const { loading, error, orders } = useSelector((state) => state.orderList)
+    // const { loading, error, orders } = useSelector((state) => state.orderList)
+    const { isLoading: loading, isError: error, data: orders } = useListOrdersQuery()
 
     const { userInfo } = useSelector((state) => state.userLogin)
 
@@ -18,7 +20,7 @@ const OrderListScreen = () => {
 
     useEffect(() => {
         if (userInfo && userInfo.isAdmin) {
-            dispatch(listOrders())
+            // dispatch(listOrders())
         } else {
             navigate('/login')
         }

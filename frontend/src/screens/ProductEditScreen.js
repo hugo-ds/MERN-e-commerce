@@ -7,16 +7,21 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { listProductDetails, resetProductUpdate, updateProduct } from '../slices/productSlice'
+import { useListProductDetailsQuery, useUpdateProductMutation } from '../services/api'
 
 const ProductEditScreen = () => {
     const { id: productId } = useParams()
 
-    const { loading, error, product } = useSelector((state) => state.productDetails)
-    const {
-        loading: loadingUpdate,
-        error: errorUpdate,
-        success: successUpdate,
-    } = useSelector((state) => state.productUpdate)
+    // const { loading, error, product } = useSelector((state) => state.productDetails)
+    const { isLoading: loading, isError: error, data: product, refetch } = useListProductDetailsQuery(productId)
+
+    // const {
+    //     loading: loadingUpdate,
+    //     error: errorUpdate,
+    //     success: successUpdate,
+    // } = useSelector((state) => state.productUpdate)
+    const [updateProduct, { isLoading: loadingUpdate, isError: errorUpdate, isSuccess: successUpdate }] =
+        useUpdateProductMutation()
 
     const [name, setName] = useState('')
     const [price, setPrice] = useState(0)
@@ -30,12 +35,14 @@ const ProductEditScreen = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
+        console.log(product)
         if (successUpdate) {
             dispatch(resetProductUpdate())
             navigate('/admin/productlist')
         } else {
-            if (!product.name || product._id !== productId) {
-                dispatch(listProductDetails(productId))
+            if (!product || !product.name || product._id !== productId) {
+                // refetch()
+                // dispatch(listProductDetails(productId))
             } else {
                 setName(product.name)
                 setPrice(product.price)
@@ -46,7 +53,7 @@ const ProductEditScreen = () => {
                 setDescription(product.description)
             }
         }
-    }, [dispatch, navigate, productId, product, successUpdate])
+    }, [dispatch, navigate, productId, product, successUpdate, refetch])
 
     // Image upload.
     const [uploading, setUploading] = useState(false)
@@ -75,7 +82,8 @@ const ProductEditScreen = () => {
     // Submit updated product data.
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(updateProduct({ _id: productId, name, price, image, brand, category, countInStock, description }))
+        // dispatch(updateProduct({ _id: productId, name, price, image, brand, category, countInStock, description }))
+        updateProduct({ _id: productId, name, price, image, brand, category, countInStock, description })
     }
 
     return (

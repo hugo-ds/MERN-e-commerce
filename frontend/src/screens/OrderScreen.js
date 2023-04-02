@@ -7,14 +7,33 @@ import Message from '../components/Message'
 import PayPalBlock from '../components/PayPalBlock'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import { deliverOrder, getOrderDetails, resetOrderDeliver, resetOrderPay } from '../slices/orderSlice'
+import {
+    useDeliverOrderMutation,
+    useGetOrderDetailsQuery,
+    useGetPaypalClientIdQuery,
+    usePayOrderMutation,
+} from '../services/api'
 
 const OrderScreen = () => {
     const { id: orderId } = useParams()
 
     // Extract data from state.
-    const { order, loading, error, clientId } = useSelector((state) => state.orderDetails)
-    const { success: successPay } = useSelector((state) => state.orderPay) // Rename extracted variable.
-    const { loading: loadingDeliver, success: successDeliver } = useSelector((state) => state.orderDeliver)
+    // const { order, loading, error, clientId } = useSelector((state) => state.orderDetails)
+    const {
+        data: order,
+        isLoading: loading,
+        isError: error,
+        refetch: refetchGetOrderDetails,
+    } = useGetOrderDetailsQuery(orderId)
+
+    const { data: clientId } = useGetPaypalClientIdQuery()
+
+    // const { success: successPay } = useSelector((state) => state.orderPay) // Rename extracted variable.
+    const { isSuccess: successPay } = usePayOrderMutation()
+
+    // const { loading: loadingDeliver, success: successDeliver } = useSelector((state) => state.orderDeliver)
+    const [deliverOrder, { isLoading: loadingDeliver, isSuccess: successDeliver }] = useDeliverOrderMutation(order)
+
     const { userInfo } = useSelector((state) => state.userLogin)
 
     const navigate = useNavigate()
@@ -25,16 +44,18 @@ const OrderScreen = () => {
         if (!userInfo) {
             navigate('/login')
         }
-        // If there is no order, or payment or deliver was successful.
+        // If there is no order, or payment or payment/deliver was successful.
         if (!order || order._id !== orderId || successPay || successDeliver) {
             dispatch(resetOrderPay())
             dispatch(resetOrderDeliver())
-            dispatch(getOrderDetails(orderId))
+            // dispatch(getOrderDetails(orderId))
+            refetchGetOrderDetails()
         }
     }, [navigate, userInfo, dispatch, order, orderId, successPay, successDeliver])
 
     const deliverHandler = () => {
-        dispatch(deliverOrder(order))
+        // dispatch(deliverOrder(order))
+        deliverOrder(order)
     }
 
     return loading ? (
@@ -142,7 +163,7 @@ const OrderScreen = () => {
                                 </Row>
                             </ListGroup.Item>
 
-                            {!order.isPaid && (
+                            {!order.isPaid && clientId && (
                                 <ListGroup.Item>
                                     <PayPalScriptProvider
                                         options={{

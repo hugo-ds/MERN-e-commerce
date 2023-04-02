@@ -26,6 +26,7 @@ import {
     productTopRatedSlice,
 } from './slices/productSlice'
 import { cartSlice } from './slices/cartSlice'
+import { api } from './services/api'
 
 // Reducers: receive store and action, and modify the store.
 const reducer = {
@@ -53,6 +54,8 @@ const reducer = {
     orderDeliver: orderDeliverSlice.reducer,
     orderMyList: orderMyListSlice.reducer,
     orderList: orderListSlice.reducer,
+
+    [api.reducerPath]: api.reducer,
 }
 
 const cartItemsFromStorage = localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : []
@@ -68,8 +71,7 @@ const preloadedState = {
 
 const store = configureStore({
     reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-    devTools: true,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
     preloadedState: preloadedState,
 })
 

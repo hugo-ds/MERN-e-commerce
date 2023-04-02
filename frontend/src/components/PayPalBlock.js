@@ -3,6 +3,7 @@ import { ListGroup } from 'react-bootstrap'
 import Loader from '../components/Loader'
 import { useDispatch } from 'react-redux'
 import { payOrder } from '../slices/orderSlice'
+import { usePayOrderMutation } from '../services/api'
 
 const PayPalBlock = ({ totalPrice, orderId }) => {
     // Paypal button related.
@@ -21,12 +22,14 @@ const PayPalBlock = ({ totalPrice, orderId }) => {
         })
     }
 
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
+    const [payOrder, _] = usePayOrderMutation()
 
     // After successful payment.
     const onApproveOrder = (data, actions) => {
         return actions.order.capture().then((details) => {
-            dispatch(payOrder({ orderId: orderId, paymentResult: details }))
+            // dispatch(payOrder({ orderId: orderId, paymentResult: details }))
+            payOrder({ orderId: orderId, paymentResult: details })
         })
     }
 

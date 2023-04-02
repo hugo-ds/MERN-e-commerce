@@ -9,19 +9,20 @@ import Paginate from '../components/Paginate'
 import ProductCarousel from '../components/ProductCarousel'
 import Meta from '../components/Meta'
 import { listProducts } from '../slices/productSlice'
+import { useListProductQuery } from '../services/api'
 
 const HomeScreen = () => {
-    const { keyword } = useParams()
+    const { keyword = '', pageNumber = 1 } = useParams()
 
-    let { pageNumber = 1 } = useParams()
+    const { isLoading: loading, isError: error, data } = useListProductQuery(keyword, pageNumber)
 
-    const { loading, error, products, pages, page } = useSelector((state) => state.productList)
+    // const { loading, error, products, pages, page } = useSelector((state) => state.productList)
 
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
 
-    useEffect(() => {
-        dispatch(listProducts({ keyword, pageNumber }))
-    }, [dispatch, keyword, pageNumber])
+    // useEffect(() => {
+    //     dispatch(listProducts({ keyword, pageNumber }))
+    // }, [dispatch, keyword, pageNumber])
 
     return (
         <>
@@ -38,18 +39,18 @@ const HomeScreen = () => {
                 <Loader />
             ) : error ? (
                 <Message variant='danger'>{error}</Message>
-            ) : (
+            ) : data ? (
                 <>
                     <Row>
-                        {products.map((product) => (
+                        {data.products.map((product) => (
                             <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
                                 <Product product={product} />
                             </Col>
                         ))}
                     </Row>
-                    <Paginate pages={pages} page={page} keyword={keyword ? keyword : ''}></Paginate>
+                    <Paginate pages={data.pages} page={data.page} keyword={keyword ? keyword : ''}></Paginate>
                 </>
-            )}
+            ) : null}
         </>
     )
 }

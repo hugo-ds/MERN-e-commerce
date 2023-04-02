@@ -7,13 +7,21 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { getUserDetails, resetUserUpdateProfile, updateUserProfile } from '../slices/userSlice'
 import { listMyOrders } from '../slices/orderSlice'
+import { useListMyOrdersQuery } from '../services/api'
 
 const ProfileScreen = () => {
     // Get variables from state.
     const { loading, error, user } = useSelector((state) => state.userDetails)
     const { userInfo } = useSelector((state) => state.userLogin)
     const { success } = useSelector((state) => state.userUpdateProfile)
-    const { loading: loadingOrders, error: errorOrders, orders } = useSelector((state) => state.orderMyList)
+
+    // const { loading: loadingOrders, error: errorOrders, orders } = useSelector((state) => state.orderMyList)
+    const {
+        isLoading: loadingOrders,
+        isError: errorOrders,
+        data: orders,
+        refetch: refetchListMyOrders,
+    } = useListMyOrdersQuery()
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -36,8 +44,8 @@ const ProfileScreen = () => {
                 setName(user.name)
                 setEmail(user.email)
             }
-
-            dispatch(listMyOrders())
+            refetchListMyOrders()
+            // dispatch(listMyOrders())
         }
     }, [userInfo, success, user, navigate, dispatch])
 
@@ -111,7 +119,7 @@ const ProfileScreen = () => {
                     <Loader></Loader>
                 ) : errorOrders ? (
                     <Message vairant='danger'>{errorOrders}</Message>
-                ) : (
+                ) : orders ? (
                     <Table striped bordered hover responsive className='table-sm'>
                         <thead>
                             <tr>
@@ -154,7 +162,7 @@ const ProfileScreen = () => {
                             ))}
                         </tbody>
                     </Table>
-                )}
+                ) : null}
             </Col>
         </Row>
     )

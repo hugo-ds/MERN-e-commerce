@@ -7,24 +7,29 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import Meta from '../components/Meta'
 import { listProductDetails, resetProductCreateReview, createProductReview } from '../slices/productSlice'
+import { useCreateProductReviewMutation, useListProductDetailsQuery } from '../services/api'
 
 const ProductScreen = () => {
     const [qty, setQty] = useState(1) // Set quantity to 1.
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState('')
 
-    const dispatch = useDispatch()
-
     // Get state variables.
     const { userInfo } = useSelector((state) => state.userLogin)
-    const { loading, error, product } = useSelector((state) => state.productDetails)
-    const { error: errorProductReview, success: successProductReview } = useSelector(
-        (state) => state.productCreateReview
-    )
+    // const { error: errorProductReview, success: successProductReview } = useSelector(
+    //     (state) => state.productCreateReview
+    // )
+    const [createProductReview, { isError: errorProductReview, isSuccess: successProductReview }] =
+        useCreateProductReviewMutation()
 
     // Specify key in "const {key}" and get that parameter with "userParams()".
     const { id } = useParams()
+
+    // const { loading, error, product } = useSelector((state) => state.productDetails)
+    const { isLoading: loading, isError: error, data: product, refetch } = useListProductDetailsQuery(id)
+
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (successProductReview) {
@@ -32,9 +37,10 @@ const ProductScreen = () => {
             setRating(0)
             setComment('')
             dispatch(resetProductCreateReview())
+            refetch() // Fetch updated review.
         }
-        dispatch(listProductDetails(id))
-    }, [dispatch, id, successProductReview])
+        // dispatch(listProductDetails(id))
+    }, [dispatch, refetch, successProductReview])
 
     const addToCartHandler = () => {
         navigate(`/cart/${id}?qty=${qty}`)
@@ -42,15 +48,16 @@ const ProductScreen = () => {
 
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(
-            createProductReview({
-                id,
-                review: {
-                    rating,
-                    comment,
-                },
-            })
-        )
+        // dispatch(
+        //     createProductReview({
+        //         id,
+        //         review: {
+        //             rating,
+        //             comment,
+        //         },
+        //     })
+        // )
+        createProductReview({ id, review: { rating, comment } })
     }
 
     return (
@@ -62,7 +69,7 @@ const ProductScreen = () => {
                 <Loader />
             ) : error ? (
                 <Message variant='danger'>{error}</Message>
-            ) : (
+            ) : product ? (
                 <>
                     <Meta title={product.name}></Meta>
                     <Row>
@@ -190,7 +197,7 @@ const ProductScreen = () => {
                         </Col>
                     </Row>
                 </>
-            )}
+            ) : null}
         </>
     )
 }

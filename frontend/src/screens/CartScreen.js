@@ -3,28 +3,38 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap'
 import Message from '../components/Message'
-import { addToCart, removeFromCart } from '../slices/cartSlice'
+import { addItem, addToCart, removeFromCart } from '../slices/cartSlice'
+import { useAddToCartQuery, useListProductDetailsQuery } from '../services/api'
 
 const CartScreen = () => {
     const navigate = useNavigate()
 
     const { id } = useParams()
-    const productId = id
-
     const location = useLocation()
     const qty = location.search ? Number(location.search.split('=')[1]) : 1
 
     const dispatch = useDispatch()
 
-    const cart = useSelector((state) => state.cart)
-
-    const { cartItems } = cart
+    const { cartItems } = useSelector((state) => state.cart)
+    // useAddToCartQuery({ productId, qty })
+    const { data: product } = useListProductDetailsQuery(id)
 
     useEffect(() => {
-        if (productId) {
-            dispatch(addToCart({ productId, qty }))
+        if (id) {
+            // dispatch(addToCart({ productId, qty }))
+            const item = {
+                product: product._id,
+                name: product.name,
+                image: product.image,
+                price: product.price,
+                countInStock: product.countInStock,
+                qty,
+            }
+
+            // Add selected item to cart.
+            dispatch(addItem(item))
         }
-    }, [dispatch, productId, qty])
+    }, [dispatch, product, qty])
 
     const removeFromCartHandler = (id) => {
         dispatch(removeFromCart(id))
@@ -59,9 +69,10 @@ const CartScreen = () => {
                                             as='select'
                                             value={item.qty}
                                             onChange={(e) =>
-                                                dispatch(
-                                                    addToCart({ productId: item.product, qty: Number(e.target.value) })
-                                                )
+                                                // dispatch(
+                                                //     addToCart({ productId: item.product, qty: Number(e.target.value) })
+                                                // )
+                                                addToCart({ productId: item.product, qty: Number(e.target.value) })
                                             }
                                         >
                                             {[...Array(item.countInStock).keys()].map((x) => (
