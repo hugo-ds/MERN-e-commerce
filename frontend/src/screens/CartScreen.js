@@ -16,11 +16,12 @@ const CartScreen = () => {
     const dispatch = useDispatch()
 
     const { cartItems } = useSelector((state) => state.cart)
-    // useAddToCartQuery({ productId, qty })
     const { data: product } = useListProductDetailsQuery(id)
 
     useEffect(() => {
         if (id) {
+            // console.log(product)
+
             // dispatch(addToCart({ productId, qty }))
             const item = {
                 product: product._id,
@@ -69,8 +70,18 @@ const CartScreen = () => {
                                             as='select'
                                             value={item.qty}
                                             onChange={(e) =>
+                                                // dispatch(
+                                                //     addToCart({ productId: item.product, qty: Number(e.target.value) })
+                                                // )
                                                 dispatch(
-                                                    addToCart({ productId: item.product, qty: Number(e.target.value) })
+                                                    addItem({
+                                                        product: item.product,
+                                                        name: item.name,
+                                                        image: item.image,
+                                                        price: item.price,
+                                                        countInStock: item.countInStock,
+                                                        qty: Number(e.target.value),
+                                                    })
                                                 )
                                             }
                                         >
