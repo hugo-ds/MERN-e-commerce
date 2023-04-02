@@ -14,6 +14,11 @@ const PaymentScreen = () => {
         navigate('/shipping')
     }
 
+    const { userInfo } = useSelector((state) => state.userLogin)
+    if (!userInfo) {
+        navigate('/login')
+    }
+
     const [paymentMethod, setPaymentMethod] = useState('PayPal')
 
     const dispatch = useDispatch()

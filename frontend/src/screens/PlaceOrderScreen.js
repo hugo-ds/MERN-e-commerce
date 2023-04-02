@@ -35,6 +35,11 @@ const PlaceOrderScreen = () => {
         }
     }, [dispatch, navigate, success, order])
 
+    const { userInfo } = useSelector((state) => state.userLogin)
+    if (!userInfo) {
+        navigate('/login')
+    }
+
     const placeOrderHandler = () => {
         // dispatch(
         createOrder({
