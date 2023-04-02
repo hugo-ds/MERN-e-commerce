@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { SearchBox } from './SearchBox'
 import { logoutUser, resetUserDetails, resetUserList } from '../slices/userSlice'
 import { resetOrderMyList } from '../slices/orderSlice'
+import { useLoginMutation } from '../services/api'
+import { useEffect, useState } from 'react'
 
 const Header = () => {
-    const dispatch = useDispatch()
-
     // Use "useSelector" to extract data from the "state".
     // If userInfo exists, user is logged in.
     const { userInfo } = useSelector((state) => state.userLogin)
+
+    const dispatch = useDispatch()
 
     // Called when user click logout button.
     const logoutHandler = () => {
@@ -58,7 +60,7 @@ const Header = () => {
                                         <LinkContainer to='/profile'>
                                             <NavDropdown.Item>Profile</NavDropdown.Item>
                                         </LinkContainer>
-                                        {userInfo && userInfo.isAdmin && (
+                                        {userInfo.isAdmin && (
                                             // If user is admin. Show admin menu too.
                                             <>
                                                 <NavDropdown.Divider />

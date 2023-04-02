@@ -6,18 +6,23 @@ import { useNavigate } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { deleteUser, listUsers } from '../slices/userSlice'
+import { useDeleteUserMutation, useListUsersQuery } from '../services/api'
 
 const UserListScreen = () => {
-    const { loading, error, users } = useSelector((state) => state.userList)
+    // const { loading, error, users } = useSelector((state) => state.userList)
+    const { isLoading: loading, isError: error, data: users } = useListUsersQuery()
+
     const { userInfo } = useSelector((state) => state.userLogin)
-    const { success } = useSelector((state) => state.userDelete)
+
+    // const { success } = useSelector((state) => state.userDelete)
+    const [deleteUser, { isSuccess: success }] = useDeleteUserMutation()
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
         if (userInfo && userInfo.isAdmin) {
-            dispatch(listUsers())
+            // dispatch(listUsers())
         } else {
             navigate('/login')
         }
@@ -25,7 +30,8 @@ const UserListScreen = () => {
 
     const delteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
-            dispatch(deleteUser(id))
+            // dispatch(deleteUser(id))
+            deleteUser(id)
         }
     }
 

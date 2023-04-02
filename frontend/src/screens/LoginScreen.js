@@ -6,15 +6,16 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { login } from '../slices/userSlice'
+import { useLoginMutation } from '../services/api'
 
 const LoginScreen = () => {
     const location = useLocation()
 
-    // Check if there is a query (redirection).
+    // Check if there is a query (redirection), if not redirect to Home.
     const redirect = location.search ? '/' + location.search.split('=')[1] : '/'
 
-    const userLogin = useSelector((state) => state.userLogin)
-    const { loading, error, userInfo } = userLogin
+    const [login, { isLoading: loading, isError: error }] = useLoginMutation()
+    const { userInfo } = useSelector((state) => state.userLogin)
 
     const navigate = useNavigate()
     useEffect(() => {
@@ -23,14 +24,15 @@ const LoginScreen = () => {
         }
     }, [userInfo, navigate, redirect])
 
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     const submitHandler = (e) => {
         e.preventDefault()
 
-        dispatch(login({ email, password }))
+        // dispatch(login({ email, password }))
+        login({ email, password })
     }
 
     return (

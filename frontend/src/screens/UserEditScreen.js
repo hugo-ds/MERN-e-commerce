@@ -6,17 +6,21 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { getUserDetails, resetUserUpdate, updateUser } from '../slices/userSlice'
+import { useGetUserDetailsQuery, useUpdateUserMutation } from '../services/api'
 
 const UserEditScreen = () => {
     const { id: userId } = useParams()
 
-    const { loading, error, user } = useSelector((state) => state.userDetails)
+    // const { loading, error, user } = useSelector((state) => state.userDetails)
+    const { isLoading: loading, isError: error, data: user } = useGetUserDetailsQuery(userId)
 
-    const {
-        loading: loadingUpdate,
-        error: errorUpdate,
-        success: successUpdate,
-    } = useSelector((state) => state.userUpdate)
+    // const {
+    //     loading: loadingUpdate,
+    //     error: errorUpdate,
+    //     success: successUpdate,
+    // } = useSelector((state) => state.userUpdate)
+    const [updateUser, { isLoading: loadingUpdate, isError: errorUpdate, isSuccess: successUpdate }] =
+        useUpdateUserMutation()
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -27,7 +31,7 @@ const UserEditScreen = () => {
             navigate('/admin/userlist')
         } else {
             if (!user || !user.name || user._id !== userId) {
-                dispatch(getUserDetails(userId))
+                // dispatch(getUserDetails(userId))
             } else {
                 setName(user.name)
                 setEmail(user.email)
@@ -42,7 +46,8 @@ const UserEditScreen = () => {
 
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(updateUser({ _id: userId, name, email, isAdmin }))
+        // dispatch(updateUser({ _id: userId, name, email, isAdmin }))
+        updateUser({ _id: userId, name, email, isAdmin })
     }
 
     return (

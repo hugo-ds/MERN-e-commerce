@@ -12,7 +12,7 @@ export const api = createApi({
                 userLogin: { userInfo },
             } = getState()
 
-            if (userInfo.token) {
+            if (userInfo && userInfo.token) {
                 headers.set('authorization', `Bearer ${userInfo.token}`)
             }
 
@@ -88,7 +88,7 @@ export const api = createApi({
 
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 try {
-                    const { data } = await queryFulfilled()
+                    const { data } = await queryFulfilled
 
                     // Set product details state.
                     dispatch(setProductDetails(data))
@@ -199,28 +199,39 @@ export const api = createApi({
         // User queries.
         //-------------------------------------
         login: build.mutation({
-            query: (email, password) => ({
+            query: ({ email, password }) => ({
                 url: '/users/login',
                 method: 'POST',
                 body: { email, password },
             }),
-            invalidatesTags: (result, error, email) => [{ type: 'User', id: email }],
-            async onQueryStarted(_, { queryFulfilled }) {
+            // invalidatesTags: (result, error, { email }) => [
+            //     { type: 'User', id: result._id },
+            //     { type: 'User', id: 'LIST' },
+            // ],
+            async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
+                    // Wait for user login.
                     const { data } = await queryFulfilled
 
+                    dispatch(loginUser(data)) // Then login. (Update state)
                     localStorage.setItem('userInfo', JSON.stringify(data))
+                    return data
                 } catch {}
             },
         }),
 
+        // Need? getUserInfo: build.query({
+
         register: build.mutation({
-            query: (name, email, password) => ({
+            query: ({ name, email, password }) => ({
                 url: '/users',
                 method: 'POST',
                 body: { name, email, password },
             }),
-            invalidatesTags: (result, error, email) => [{ type: 'User', id: email }],
+            invalidatesTags: (result, error, email) => [
+                { type: 'User', id: result._id },
+                { type: 'User', id: 'LIST' },
+            ],
 
             // Use api.endpoints.postCredentials.matchFulfilled in extra reducers?
             async onQueryStarted(_, { queryFulfilled, dispatch }) {
@@ -228,9 +239,7 @@ export const api = createApi({
                     // Wait for user registration.
                     const { data } = await queryFulfilled
 
-                    // Then login.
-                    dispatch(loginUser(data))
-
+                    dispatch(loginUser(data)) // Then login. (Update state)
                     localStorage.setItem('userInfo', JSON.stringify(data))
                 } catch {}
             },
@@ -247,10 +256,12 @@ export const api = createApi({
                 method: 'PUT',
                 body: user,
             }),
-            invalidatesTags: (result, error, user) => [{ type: 'User', id: user.email }],
+            invalidatesTags: (result, error, user) => [
+                { type: 'User', id: user._id },
+                { type: 'User', id: 'LIST' },
+            ],
 
-            // Use api.endpoints.postCredentials.matchFulfilled in extra reducers?
-            async onQueryStarted(_, { queryFulfilled, dispatch }) {
+            async onQueryStarted(user, { queryFulfilled, dispatch }) {
                 try {
                     // Wait for user update.
                     const { data } = await queryFulfilled
@@ -267,7 +278,7 @@ export const api = createApi({
             query: () => '/users',
             providesTags: (result) =>
                 result
-                    ? [...result.users.map(({ _id }) => ({ type: 'User', id: _id })), { type: 'User', id: 'LIST' }]
+                    ? [...result.map(({ _id }) => ({ type: 'User', id: _id })), { type: 'User', id: 'LIST' }]
                     : [{ type: 'User', id: 'LIST' }],
         }),
 
@@ -285,7 +296,10 @@ export const api = createApi({
                 method: 'PUT',
                 body: user,
             }),
-            invalidatesTags: (result, error, user) => [{ type: 'User', id: user.email }],
+            invalidatesTags: (result, error, user) => [
+                { type: 'User', id: user._id },
+                { type: 'User', id: 'LIST' },
+            ],
 
             // Use api.endpoints.postCredentials.matchFulfilled in extra reducers?
             async onQueryStarted(_, { queryFulfilled, dispatch }) {
@@ -309,7 +323,6 @@ export const {
     useUpdateProductMutation,
     useCreateProductReviewMutation,
     useListTopRatedProductsQuery,
-    useAddToCartQuery,
     useCreateOrderMutation,
     useGetOrderDetailsQuery,
     useGetPaypalClientIdQuery,

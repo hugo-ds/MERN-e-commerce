@@ -6,13 +6,16 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { register } from '../slices/userSlice'
+import { useRegisterMutation } from '../services/api'
 
 const RegisterScreen = () => {
     const location = useLocation()
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
     // Extract user login data from the "state".
-    const { loading, error, userInfo } = useSelector((state) => state.userRegister)
+    // const { loading, error, userInfo } = useSelector((state) => state.userRegister)
+    const { userInfo } = useSelector((state) => state.userLogin)
+    const [register, { isLoading: loading, isError: error }] = useRegisterMutation()
 
     const navigate = useNavigate()
     useEffect(() => {
@@ -34,7 +37,8 @@ const RegisterScreen = () => {
         if (password !== confirmPassword) {
             setMessage('Passwords do not match')
         } else {
-            dispatch(register({ name, email, password }))
+            // dispatch(register({ name, email, password }))
+            register({ name, email, password })
         }
     }
 

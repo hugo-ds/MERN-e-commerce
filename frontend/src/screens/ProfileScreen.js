@@ -7,13 +7,22 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { getUserDetails, resetUserUpdateProfile, updateUserProfile } from '../slices/userSlice'
 import { listMyOrders } from '../slices/orderSlice'
-import { useListMyOrdersQuery } from '../services/api'
+import { useGetUserDetailsQuery, useListMyOrdersQuery, useUpdateUserProfileMutation } from '../services/api'
 
 const ProfileScreen = () => {
     // Get variables from state.
-    const { loading, error, user } = useSelector((state) => state.userDetails)
+    // const { loading, error, user } = useSelector((state) => state.userDetails)
+    const {
+        isLoading: loading,
+        isError: error,
+        data: user,
+        refetch: refetchGetUserDetails,
+    } = useGetUserDetailsQuery('profile')
+
     const { userInfo } = useSelector((state) => state.userLogin)
-    const { success } = useSelector((state) => state.userUpdateProfile)
+
+    // const { success } = useSelector((state) => state.userUpdateProfile)
+    const [updateUserProfile, { isSuccess: success }] = useUpdateUserProfileMutation()
 
     // const { loading: loadingOrders, error: errorOrders, orders } = useSelector((state) => state.orderMyList)
     const {
@@ -39,7 +48,8 @@ const ProfileScreen = () => {
         } else {
             if (!user || !user.name || success) {
                 dispatch(resetUserUpdateProfile())
-                dispatch(getUserDetails('profile'))
+                // dispatch(getUserDetails('profile'))
+                refetchGetUserDetails('profile')
             } else {
                 setName(user.name)
                 setEmail(user.email)
@@ -55,7 +65,8 @@ const ProfileScreen = () => {
         if (password !== confirmPassword) {
             setMessage('Passwords do not match')
         } else {
-            dispatch(updateUserProfile({ id: user._id, name, email, password }))
+            // dispatch(updateUserProfile({ id: user._id, name, email, password }))
+            updateUserProfile({ _id: user._id, name, email, password })
         }
     }
 
