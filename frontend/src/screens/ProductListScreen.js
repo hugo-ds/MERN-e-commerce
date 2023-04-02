@@ -7,12 +7,16 @@ import Loader from '../components/Loader'
 import { useNavigate, useParams } from 'react-router-dom'
 import Paginate from '../components/Paginate'
 import { listProducts, deleteProduct, createProduct, resetProductCreate } from '../slices/productSlice'
-import { useCreateOrderMutation, useCreateProductMutation, useDeleteProductMutation } from '../services/api'
+import {
+    useCreateOrderMutation,
+    useCreateProductMutation,
+    useDeleteProductMutation,
+    useListProductQuery,
+} from '../services/api'
 
 const ProductListScreen = () => {
     const dispatch = useDispatch()
 
-    const { loading, error, products, page, pages } = useSelector((state) => state.productList)
     const { userInfo } = useSelector((state) => state.userLogin)
     // const {
     //     loading: loadingDelete,
@@ -38,6 +42,9 @@ const ProductListScreen = () => {
 
     let { pageNumber = 1 } = useParams()
 
+    // const { loading, error, products, page, pages } = useSelector((state) => state.productList)
+    const { isLoading: loading, isError: error, data } = useListProductQuery('', pageNumber)
+
     useEffect(() => {
         dispatch(resetProductCreate)
 
@@ -48,7 +55,7 @@ const ProductListScreen = () => {
         if (successCreate) {
             navigate(`/admin/product/${createdProduct._id}/edit`)
         } else {
-            dispatch(listProducts({ keyword: '', pageNumber }))
+            // dispatch(listProducts({ keyword: '', pageNumber }))
         }
     }, [dispatch, navigate, userInfo, successDelete, successCreate, createdProduct, pageNumber])
 
@@ -98,7 +105,7 @@ const ProductListScreen = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map((product) => (
+                            {data.products.map((product) => (
                                 <tr key={product._id}>
                                     <td>{product._id}</td>
                                     <td>{product.name}</td>
@@ -125,7 +132,7 @@ const ProductListScreen = () => {
                             ))}
                         </tbody>
                     </Table>
-                    <Paginate pages={pages} page={page} isAdmin={true}></Paginate>
+                    <Paginate pages={data.pages} page={data.page} isAdmin={true}></Paginate>
                 </>
             )}
         </>
