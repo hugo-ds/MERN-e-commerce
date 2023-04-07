@@ -3,26 +3,24 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, ListGroup, Image, Form, Button, Card } from 'react-bootstrap'
 import Message from '../components/Message'
-import { addItem, addToCart, removeFromCart } from '../slices/cartSlice'
-import { useAddToCartQuery, useListProductDetailsQuery } from '../services/api'
+import { addItem, removeFromCart } from '../slices/cartSlice'
+import { useListProductDetailsQuery } from '../services/api'
 
+// Shows user's cart contents.
 const CartScreen = () => {
-    const navigate = useNavigate()
-
     const { id } = useParams()
-    const location = useLocation()
+    const location = useLocation() // Page's url
+    // Get quantity from "?qty=x" in current page's url. If there is no "?qty=x", return 1.
     const qty = location.search ? Number(location.search.split('=')[1]) : 1
+
+    const { cartItems } = useSelector((state) => state.cart) // Get items in cart.
+    const { data: product } = useListProductDetailsQuery(id) // Fetch selected product data by id.
 
     const dispatch = useDispatch()
 
-    const { cartItems } = useSelector((state) => state.cart)
-    const { data: product } = useListProductDetailsQuery(id)
-
     useEffect(() => {
         if (id) {
-            // console.log(product)
-
-            // dispatch(addToCart({ productId, qty }))
+            // Create an item object from selected product and quantity.
             const item = {
                 product: product._id,
                 name: product.name,
@@ -35,12 +33,15 @@ const CartScreen = () => {
             // Add selected item to cart.
             dispatch(addItem(item))
         }
-    }, [dispatch, product, qty])
+    }, [dispatch, id, product, qty])
 
     const removeFromCartHandler = (id) => {
         dispatch(removeFromCart(id))
     }
 
+    const navigate = useNavigate()
+
+    // Start checkout process. Go to shipping page, if user is logged in.
     const checkoutHandler = () => {
         navigate('/login?redirect=shipping')
     }
@@ -54,6 +55,7 @@ const CartScreen = () => {
                         Your cart is empty. <Link to='/'>Go back</Link>
                     </Message>
                 ) : (
+                    // Show each item in the cart.
                     <ListGroup variant='flush'>
                         {cartItems.map((item) => (
                             <ListGroup.Item key={item.product}>
@@ -70,9 +72,6 @@ const CartScreen = () => {
                                             as='select'
                                             value={item.qty}
                                             onChange={(e) =>
-                                                // dispatch(
-                                                //     addToCart({ productId: item.product, qty: Number(e.target.value) })
-                                                // )
                                                 dispatch(
                                                     addItem({
                                                         product: item.product,

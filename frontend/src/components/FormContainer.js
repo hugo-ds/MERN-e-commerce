@@ -1,5 +1,6 @@
 import { Container, Row, Col } from 'react-bootstrap'
 
+// Form's layout.
 const FormContainer = ({ children }) => {
     return (
         <Container>

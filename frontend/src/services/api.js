@@ -1,8 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { setProductDetails } from '../slices/productSlice'
-import { addItem } from '../slices/cartSlice'
-import { loginUser, setUserDetails } from '../slices/userSlice'
+import { loginUser } from '../slices/userSlice.js'
 
+// Define fetch functions.
 export const api = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: '/api',
@@ -12,6 +11,7 @@ export const api = createApi({
                 userLogin: { userInfo },
             } = getState()
 
+            // Add user token to request header.
             if (userInfo && userInfo.token) {
                 headers.set('authorization', `Bearer ${userInfo.token}`)
             }
@@ -21,40 +21,35 @@ export const api = createApi({
     }),
 
     //reducerPath: 'api',
-    tagTypes: ['Product', 'Order', 'Paypal', 'User'],
+    // Cache tags.
+    tagTypes: ['Product', 'Order', 'User'],
 
     endpoints: (build) => ({
         //-------------------------------------
         // Product queries.
         //-------------------------------------
+        // Fetch all products.
         listProduct: build.query({
             query: (keyword = '', pageNumber = '') => `/products?keyword=${keyword}&pageNumber=${pageNumber}`,
             providesTags: (result) =>
                 result
-                    ? // successful query
+                    ? // Successful query
                       [
                           ...result.products.map(({ _id }) => ({ type: 'Product', id: _id })),
-                          // addUserがあったときのために特別なタグを用意する。
+                          // add tag for addUser
                           { type: 'Product', id: 'LIST' },
                       ]
-                    : // エラーがあった場合でもユーザ追加をしたタイミングで再データ取得をする。
+                    : // if error, refetch after add user
                       [{ type: 'Product', id: 'LIST' }],
-            // providesTags: function (result) {
-            //     let r = [
-            //         ...result.products.map(({ _id }) => ({ type: 'Product', _id })),
-            //         // addUserがあったときのために特別なタグを用意する。
-            //         { type: 'Product', id: 'LIST' },
-            //     ]
-            //     console.log(r)
-            //     return [{ type: 'Product', id: 'LIST' }]
-            // },
         }),
 
+        // Fetch a product data.
         listProductDetails: build.query({
             query: (id) => `/products/${id}`,
             providesTags: (result, error, id) => [{ type: 'Product', id: id }],
         }),
 
+        // Delete a product.
         deleteProduct: build.mutation({
             query: (id) => ({
                 url: `/products/${id}`,
@@ -64,6 +59,7 @@ export const api = createApi({
             invalidatesTags: (result, error, id) => [{ type: 'Product', id }],
         }),
 
+        // Create a sample product.
         createProduct: build.mutation({
             query: () => ({
                 url: '/products',
@@ -76,6 +72,7 @@ export const api = createApi({
         }),
 
         // TODO: fix bug (see todo list)
+        // Update a product.
         updateProduct: build.mutation({
             query: (product) => ({
                 url: `/products/${product._id}`,
@@ -84,63 +81,35 @@ export const api = createApi({
             }),
             // Invalidates all Post-type queries providing the `LIST` id - after all, depending of the sort order,
             // that newly created post could show up in any lists.
-            invalidatesTags: [{ type: 'Product', id: 'LIST' }],
-
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled
-
-                    // Set product details state.
-                    dispatch(setProductDetails(data))
-                    return data
-                } catch {}
-            },
+            invalidatesTags: (result, error, product) => [
+                { type: 'Product', id: product._id },
+                { type: 'Product', id: 'LIST' },
+            ],
         }),
 
+        // Create new product review.
         createProductReview: build.mutation({
             query: ({ id, review }) => ({
                 url: `/products/${id}/reviews`,
                 method: 'POST',
                 body: review,
             }),
-            invalidatesTags: (result, error, id) => [{ type: 'Product', id: id }],
+            invalidatesTags: (result, error, id) => [
+                { type: 'Product', id: id },
+                { type: 'Product', id: 'LIST' },
+            ],
         }),
 
+        // Fetch 3 top rated products.
         listTopRatedProducts: build.query({
             query: () => '/products/top',
             providesTags: [{ type: 'Product', id: 'LIST' }],
         }),
 
-        //-------------------------------------
-        // Cart queries.
-        //-------------------------------------
-        // addToCart: build.query({
-        //     query: ({ productId = '', qty = 0 }) => `/products/${productId}`,
-        //     providesTags: (result, error, productId) => [{ type: 'Product', id: productId }],
-
-        //     // Receive args, destructure to get 'qty'
-        //     async onQueryStarted({ productId, qty }, { dispatch, queryFulfilled }) {
-        //         try {
-        //             const { data } = await queryFulfilled
-
-        //             const item = {
-        //                 product: data._id,
-        //                 name: data.name,
-        //                 image: data.image,
-        //                 price: data.price,
-        //                 countInStock: data.countInStock,
-        //                 qty,
-        //             }
-
-        //             // Add selected item to cart.
-        //             dispatch(addItem(item))
-        //         } catch {}
-        //     },
-        // }),
-
         //-----------------------------------------
         //  Order queries.
         //-----------------------------------------
+        // Create an order.
         createOrder: build.mutation({
             query: (order) => ({
                 url: '/orders',
@@ -150,17 +119,18 @@ export const api = createApi({
             invalidatesTags: [{ type: 'Order', id: 'LIST' }],
         }),
 
+        // Fetch an order's details.
         getOrderDetails: build.query({
             query: (id) => `/orders/${id}`,
             providesTags: (result, error, id) => [{ type: 'Order', id: id }],
         }),
 
+        // Fetch Paypal client id.
         getPaypalClientId: build.query({
             query: () => ({ url: '/config/paypal', responseHandler: (response) => response.text() }),
-
-            providesTags: [{ type: 'Paypal' }],
         }),
 
+        // Pay an order.
         payOrder: build.mutation({
             query: ({ orderId, paymentResult }) => ({
                 url: `/orders/${orderId}/pay`,
@@ -170,6 +140,7 @@ export const api = createApi({
             invalidatesTags: (result, error, { orderId }) => [{ type: 'Order', id: orderId }],
         }),
 
+        // Mark an order as delivered.
         deliverOrder: build.mutation({
             query: (order) => ({
                 url: `/orders/${order._id}/deliver`,
@@ -179,6 +150,7 @@ export const api = createApi({
             invalidatesTags: (result, error, order) => [{ type: 'Order', id: order._id }],
         }),
 
+        // Fetch user's all orders.
         listMyOrders: build.query({
             query: () => `/orders/myorders`,
             providesTags: (result) =>
@@ -187,6 +159,7 @@ export const api = createApi({
                     : [{ type: 'Order', id: 'LIST' }],
         }),
 
+        // Fetch app's all orders.
         listOrders: build.query({
             query: () => `/orders`,
             providesTags: (result) =>
@@ -198,30 +171,29 @@ export const api = createApi({
         //-------------------------------------
         // User queries.
         //-------------------------------------
+        // Login a user.
         login: build.mutation({
             query: ({ email, password }) => ({
                 url: '/users/login',
                 method: 'POST',
                 body: { email, password },
             }),
-            // invalidatesTags: (result, error, { email }) => [
-            //     { type: 'User', id: result._id },
-            //     { type: 'User', id: 'LIST' },
-            // ],
             async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
                     // Wait for user login.
                     const { data } = await queryFulfilled
 
-                    dispatch(loginUser(data)) // Then login. (Update state)
+                    // Then login. (Update state)
+                    dispatch(loginUser(data))
+
+                    // Save login info in local storage.
                     localStorage.setItem('userInfo', JSON.stringify(data))
                     return data
                 } catch {}
             },
         }),
 
-        // Need? getUserInfo: build.query({
-
+        // Register new user.
         register: build.mutation({
             query: ({ name, email, password }) => ({
                 url: '/users',
@@ -233,23 +205,27 @@ export const api = createApi({
                 { type: 'User', id: 'LIST' },
             ],
 
-            // Use api.endpoints.postCredentials.matchFulfilled in extra reducers?
             async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
                     // Wait for user registration.
                     const { data } = await queryFulfilled
 
-                    dispatch(loginUser(data)) // Then login. (Update state)
+                    // Then login. (Update state)
+                    dispatch(loginUser(data))
+
+                    // Save login info in local storage.
                     localStorage.setItem('userInfo', JSON.stringify(data))
                 } catch {}
             },
         }),
 
+        // Fetch user's details.
         getUserDetails: build.query({
             query: (id) => `/users/${id}`,
             providesTags: (result, error, id) => [{ type: 'User', id: id }],
         }),
 
+        // Update user's profile.
         updateUserProfile: build.mutation({
             query: (user) => ({
                 url: '/users/profile',
@@ -269,11 +245,13 @@ export const api = createApi({
                     // Login updated user.
                     dispatch(loginUser(data))
 
+                    // Save login info in local storage.
                     localStorage.setItem('userInfo', JSON.stringify(data))
                 } catch {}
             },
         }),
 
+        // Fetch all users.
         listUsers: build.query({
             query: () => '/users',
             providesTags: (result) =>
@@ -282,6 +260,7 @@ export const api = createApi({
                     : [{ type: 'User', id: 'LIST' }],
         }),
 
+        // Delete a user.
         deleteUser: build.mutation({
             query: (id) => ({
                 url: `/users/${id}`,
@@ -290,6 +269,7 @@ export const api = createApi({
             invalidatesTags: (result, error, id) => [{ type: 'User', id }],
         }),
 
+        // Update a user.
         updateUser: build.mutation({
             query: (user) => ({
                 url: `/users/${user._id}`,
@@ -300,17 +280,6 @@ export const api = createApi({
                 { type: 'User', id: user._id },
                 { type: 'User', id: 'LIST' },
             ],
-
-            // Use api.endpoints.postCredentials.matchFulfilled in extra reducers?
-            async onQueryStarted(_, { queryFulfilled, dispatch }) {
-                try {
-                    // Wait for user update.
-                    const { data } = await queryFulfilled
-
-                    // Then set user's new details.
-                    dispatch(setUserDetails(data))
-                } catch {}
-            },
         }),
     }),
 })

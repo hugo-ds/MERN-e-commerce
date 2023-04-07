@@ -1,36 +1,35 @@
 import { useEffect } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Table, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { deleteUser, listUsers } from '../slices/userSlice'
 import { useDeleteUserMutation, useListUsersQuery } from '../services/api'
 
+// List of all users. Admin only.
 const UserListScreen = () => {
-    // const { loading, error, users } = useSelector((state) => state.userList)
+    // Fetch list of all users.
     const { isLoading: loading, isError: error, data: users } = useListUsersQuery()
 
-    const { userInfo } = useSelector((state) => state.userLogin)
+    // Declare delete a user mutation.
+    const [deleteUser] = useDeleteUserMutation()
 
-    // const { success } = useSelector((state) => state.userDelete)
-    const [deleteUser, { isSuccess: success }] = useDeleteUserMutation()
-
-    const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    // Get user's login info.
+    const { userInfo } = useSelector((state) => state.userLogin)
+
     useEffect(() => {
-        if (userInfo && userInfo.isAdmin) {
-            // dispatch(listUsers())
-        } else {
+        // Force login. Admin only.
+        if (!userInfo || !userInfo.isAdmin) {
             navigate('/login')
         }
-    }, [dispatch, navigate, userInfo, success])
+    }, [navigate, userInfo])
 
-    const delteHandler = (id) => {
+    // Delete a user.
+    const deleteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
-            // dispatch(deleteUser(id))
             deleteUser(id)
         }
     }
@@ -42,7 +41,7 @@ const UserListScreen = () => {
                 <Loader></Loader>
             ) : error ? (
                 <Message vairant='danger'>{error}</Message>
-            ) : (
+            ) : users ? (
                 <Table striped bordered hover responsive className='table-sm'>
                     <thead>
                         <tr>
@@ -69,12 +68,14 @@ const UserListScreen = () => {
                                     )}
                                 </td>
                                 <td>
+                                    {/* Edit a user */}
                                     <LinkContainer to={`/admin/user/${user._id}/edit`}>
                                         <Button variant='dark' className='btn-sm'>
                                             <i className='fas fa-edit'></i>
                                         </Button>
                                     </LinkContainer>
-                                    <Button variant='danger' className='btn-sm' onClick={() => delteHandler(user._id)}>
+                                    {/* Delete a user. */}
+                                    <Button variant='danger' className='btn-sm' onClick={() => deleteHandler(user._id)}>
                                         <i className='fas fa-trash'></i>
                                     </Button>
                                 </td>
@@ -82,7 +83,7 @@ const UserListScreen = () => {
                         ))}
                     </tbody>
                 </Table>
-            )}
+            ) : null}
         </>
     )
 }

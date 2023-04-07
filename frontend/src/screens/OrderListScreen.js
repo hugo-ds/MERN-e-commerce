@@ -1,30 +1,28 @@
 import { useEffect } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Table, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listOrders } from '../slices/orderSlice'
 import { useListOrdersQuery } from '../services/api'
 
+// Show a list of all orders.
 const OrderListScreen = () => {
-    const dispatch = useDispatch()
-
-    // const { loading, error, orders } = useSelector((state) => state.orderList)
+    // Fetch orders list.
     const { isLoading: loading, isError: error, data: orders } = useListOrdersQuery()
 
+    // Get user login info.
     const { userInfo } = useSelector((state) => state.userLogin)
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (userInfo && userInfo.isAdmin) {
-            // dispatch(listOrders())
-        } else {
+        // Redirect to login page if user isn't logged in or isn't an admin.
+        if (!userInfo || !userInfo.isAdmin) {
             navigate('/login')
         }
-    }, [dispatch, navigate, userInfo])
+    }, [navigate, userInfo])
 
     return (
         <>
@@ -33,7 +31,8 @@ const OrderListScreen = () => {
                 <Loader></Loader>
             ) : error ? (
                 <Message vairant='danger'>{error}</Message>
-            ) : (
+            ) : orders ? (
+                // Show a list of all orders.
                 <Table striped bordered hover responsive className='table-sm'>
                     <thead>
                         <tr>
@@ -68,6 +67,7 @@ const OrderListScreen = () => {
                                     )}
                                 </td>
                                 <td>
+                                    {/* Show order's details button. */}
                                     <LinkContainer to={`/order/${order._id}`}>
                                         <Button variant='dark' className='btn-sm'>
                                             Details
@@ -78,7 +78,7 @@ const OrderListScreen = () => {
                         ))}
                     </tbody>
                 </Table>
-            )}
+            ) : null}
         </>
     )
 }

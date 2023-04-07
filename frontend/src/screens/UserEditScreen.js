@@ -1,52 +1,45 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { getUserDetails, resetUserUpdate, updateUser } from '../slices/userSlice'
 import { useGetUserDetailsQuery, useUpdateUserMutation } from '../services/api'
 
+// Edit user data.
 const UserEditScreen = () => {
-    const { id: userId } = useParams()
+    const { id: userId } = useParams() // Get id from url.
 
-    // const { loading, error, user } = useSelector((state) => state.userDetails)
+    // Fetch user's details.
     const { isLoading: loading, isError: error, data: user } = useGetUserDetailsQuery(userId)
 
-    // const {
-    //     loading: loadingUpdate,
-    //     error: errorUpdate,
-    //     success: successUpdate,
-    // } = useSelector((state) => state.userUpdate)
+    // Declare update user's data mutation and its result data.
     const [updateUser, { isLoading: loadingUpdate, isError: errorUpdate, isSuccess: successUpdate }] =
         useUpdateUserMutation()
 
-    const dispatch = useDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
+        // When user's data is updated, go to users list page.
         if (successUpdate) {
-            dispatch(resetUserUpdate())
             navigate('/admin/userlist')
         } else {
-            if (!user || !user.name || user._id !== userId) {
-                // dispatch(getUserDetails(userId))
-            } else {
+            if (user && user.name && user._id === userId) {
                 setName(user.name)
                 setEmail(user.email)
                 setIsAdmin(user.isAdmin)
             }
         }
-    }, [user, dispatch, navigate, userId, successUpdate])
+    }, [navigate, user, userId, successUpdate])
 
+    // Form data.
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [isAdmin, setIsAdmin] = useState(false)
 
+    // Update user's data.
     const submitHandler = (e) => {
         e.preventDefault()
-        // dispatch(updateUser({ _id: userId, name, email, isAdmin }))
         updateUser({ _id: userId, name, email, isAdmin })
     }
 
@@ -94,6 +87,7 @@ const UserEditScreen = () => {
                             ></Form.Check>
                         </Form.Group>
 
+                        {/* Update user's data. */}
                         <Button type='submit' variant='primary'>
                             Update
                         </Button>

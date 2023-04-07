@@ -2,25 +2,19 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Nav, Container, NavDropdown, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { SearchBox } from './SearchBox'
-import { logoutUser, resetUserDetails, resetUserList } from '../slices/userSlice'
-import { resetOrderMyList } from '../slices/orderSlice'
-import { useLoginMutation } from '../services/api'
-import { useEffect, useState } from 'react'
+import { logoutUser } from '../slices/userSlice'
 
+// Each page's header.
 const Header = () => {
-    // Use "useSelector" to extract data from the "state".
-    // If userInfo exists, user is logged in.
+    // Get user's login info.
     const { userInfo } = useSelector((state) => state.userLogin)
 
     const dispatch = useDispatch()
 
-    // Called when user click logout button.
+    // Logout current user.
     const logoutHandler = () => {
         localStorage.removeItem('userInfo')
         dispatch(logoutUser())
-        dispatch(resetUserDetails())
-        dispatch(resetOrderMyList())
-        dispatch(resetUserList())
     }
 
     return (
@@ -76,6 +70,7 @@ const Header = () => {
                                             </>
                                         )}
                                         <NavDropdown.Divider />
+                                        {/* Logout current user. */}
                                         <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
                                     </NavDropdown>
                                 ) : (

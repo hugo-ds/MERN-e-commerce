@@ -1,37 +1,40 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { login } from '../slices/userSlice'
 import { useLoginMutation } from '../services/api'
 
+// Login page.
 const LoginScreen = () => {
-    const location = useLocation()
+    const location = useLocation() // Page url.
 
-    // Check if there is a query (redirection), if not redirect to Home.
+    // Check if there is a query (redirection), if not redirect to Home page.
     const redirect = location.search ? '/' + location.search.split('=')[1] : '/'
 
+    // Declare login function and its result data.
     const [login, { isLoading: loading, isError: error }] = useLoginMutation()
+
+    // Get user's login info.
     const { userInfo } = useSelector((state) => state.userLogin)
 
     const navigate = useNavigate()
     useEffect(() => {
+        // If user is already logged in, redirect to another page.
         if (userInfo) {
             navigate(redirect)
         }
     }, [userInfo, navigate, redirect])
 
-    // const dispatch = useDispatch()
+    // Form input data.
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    // Login user when button is clicked.
     const submitHandler = (e) => {
         e.preventDefault()
-
-        // dispatch(login({ email, password }))
         login({ email, password })
     }
 

@@ -2,16 +2,14 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Form, Button, Row, Col, Table } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getUserDetails, resetUserUpdateProfile, updateUserProfile } from '../slices/userSlice'
-import { listMyOrders } from '../slices/orderSlice'
 import { useGetUserDetailsQuery, useListMyOrdersQuery, useUpdateUserProfileMutation } from '../services/api'
 
+// User's profile (list orders).
 const ProfileScreen = () => {
-    // Get variables from state.
-    // const { loading, error, user } = useSelector((state) => state.userDetails)
+    // Fetch user's data.
     const {
         isLoading: loading,
         isError: error,
@@ -19,21 +17,16 @@ const ProfileScreen = () => {
         refetch: refetchGetUserDetails,
     } = useGetUserDetailsQuery('profile')
 
-    const { userInfo } = useSelector((state) => state.userLogin)
-
-    // const { success } = useSelector((state) => state.userUpdateProfile)
+    // Declare update user profile mutation and its result data.
     const [updateUserProfile, { isSuccess: success }] = useUpdateUserProfileMutation()
 
-    // const { loading: loadingOrders, error: errorOrders, orders } = useSelector((state) => state.orderMyList)
+    // Fetch user's orders list.
     const {
         isLoading: loadingOrders,
         isError: errorOrders,
         data: orders,
         refetch: refetchListMyOrders,
     } = useListMyOrdersQuery()
-
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
 
     // Declare state variables. (Rerender happens when it's modified.)
     const [name, setName] = useState('')
@@ -42,30 +35,32 @@ const ProfileScreen = () => {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [message, setMessage] = useState(null)
 
+    // Get user's login info.
+    const { userInfo } = useSelector((state) => state.userLogin)
+
+    const navigate = useNavigate()
+
     useEffect(() => {
         if (!userInfo) {
-            navigate('/login')
+            navigate('/login') // Force login.
         } else {
+            // If thre is no user data or if profile update was successful, refetch user's data.
             if (!user || !user.name || success) {
-                dispatch(resetUserUpdateProfile())
-                // dispatch(getUserDetails('profile'))
                 refetchGetUserDetails('profile')
             } else {
                 setName(user.name)
                 setEmail(user.email)
             }
             refetchListMyOrders()
-            // dispatch(listMyOrders())
         }
-    }, [userInfo, success, user, navigate, dispatch])
+    }, [userInfo, success, user, navigate, refetchGetUserDetails, refetchListMyOrders])
 
-    // Click update button.
+    // Update user's profile.
     const submitHandler = (e) => {
         e.preventDefault()
         if (password !== confirmPassword) {
             setMessage('Passwords do not match')
         } else {
-            // dispatch(updateUserProfile({ id: user._id, name, email, password }))
             updateUserProfile({ _id: user._id, name, email, password })
         }
     }
@@ -119,12 +114,14 @@ const ProfileScreen = () => {
                         ></Form.Control>
                     </Form.Group>
 
+                    {/* Update user's profile. */}
                     <Button type='submit' variant='primary'>
                         Update
                     </Button>
                 </Form>
             </Col>
             <Col md={9}>
+                {/* User's orders. */}
                 <h2>My Orders</h2>
                 {loadingOrders ? (
                     <Loader></Loader>

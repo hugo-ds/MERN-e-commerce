@@ -1,30 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice } from '@reduxjs/toolkit'
 
-export const addToCart = createAsyncThunk('cart/addToCart', async (param, { rejectWithValue, dispatch }) => {
-    const { productId = '', qty = 0 } = param
-
-    try {
-        // Get selected product's data.
-        const { data } = await axios.get(`/api/products/${productId}`)
-        const item = {
-            product: data._id,
-            name: data.name,
-            image: data.image,
-            price: data.price,
-            countInStock: data.countInStock,
-            qty,
-        }
-
-        // Add selected item to cart.
-        dispatch(addItem(item))
-    } catch (error) {
-        return rejectWithValue(
-            error.response && error.response.data.message ? error.response.data.message : error.response
-        )
-    }
-})
-
+// Change cart state.
 export const cartSlice = createSlice({
     name: 'cart',
     initialState: {
@@ -32,6 +8,7 @@ export const cartSlice = createSlice({
         shippingAddress: {},
     },
     reducers: {
+        // Add an item to cart.  Update local storage.
         addItem: (state, action) => {
             const item = action.payload
             const existItem = state.cartItems.find((x) => x.product === item.product)
@@ -45,22 +22,26 @@ export const cartSlice = createSlice({
             localStorage.setItem('cartItems', JSON.stringify(state.cartItems))
         },
 
+        // Remove an item form cart. Update local storage.
         removeFromCart: (state, action) => {
-            // Remove the product (== action.payload).
+            // Remove a product if == action.payload.
             state.cartItems = state.cartItems.filter((x) => x.product !== action.payload)
             localStorage.setItem('cartItems', JSON.stringify(state.cartItems))
         },
 
+        // Save shipping address info to state and local storage.
         saveShippingAddress: (state, action) => {
             state.shippingAddress = action.payload // Data (action.payload) from the form.
             localStorage.setItem('shippingAddress', JSON.stringify(state.shippingAddress))
         },
 
+        // Save payment method to state and local storage.
         savePaymentMethod: (state, action) => {
             state.paymentMethod = action.payload
             localStorage.setItem('paymentMethod', JSON.stringify(state.paymentMethod))
         },
 
+        // Empty cart.
         resetCart: (state) => {
             state.cartItems = []
             localStorage.setItem('cartItems', JSON.stringify(state.cartItems))

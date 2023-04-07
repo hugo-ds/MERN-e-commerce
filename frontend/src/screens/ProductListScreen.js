@@ -1,38 +1,20 @@
 import { useEffect } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Table, Button, Row, Col } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { useNavigate, useParams } from 'react-router-dom'
 import Paginate from '../components/Paginate'
-import { listProducts, deleteProduct, createProduct, resetProductCreate } from '../slices/productSlice'
-import {
-    useCreateOrderMutation,
-    useCreateProductMutation,
-    useDeleteProductMutation,
-    useListProductQuery,
-} from '../services/api'
+import { useCreateProductMutation, useDeleteProductMutation, useListProductQuery } from '../services/api'
 
+// Shows a list of all products. Must be logged in as an admin user to see this page.
 const ProductListScreen = () => {
-    const dispatch = useDispatch()
-
-    const { userInfo } = useSelector((state) => state.userLogin)
-    // const {
-    //     loading: loadingDelete,
-    //     error: errorDelete,
-    //     success: successDelete,
-    // } = useSelector((state) => state.productDelete)
-
+    // Declare delete a product mutation and its result data.
     const [deleteProduct, { isLoading: loadingDelete, isError: errorDelete, isSuccess: successDelete }] =
         useDeleteProductMutation()
 
-    // const {
-    //     loading: loadingCreate,
-    //     error: errorCreate,
-    //     success: successCreate,
-    //     product: createdProduct,
-    // } = useSelector((state) => state.productCreate)
+    // Declare create a sample product mutation and its result data.
     const [
         createProduct,
         { isLoading: loadingCreate, isError: errorCreate, isSuccess: successCreate, data: createdProduct },
@@ -40,34 +22,33 @@ const ProductListScreen = () => {
 
     const navigate = useNavigate()
 
-    let { pageNumber = 1 } = useParams()
+    let { pageNumber = 1 } = useParams() // Get current page number from url.
 
-    // const { loading, error, products, page, pages } = useSelector((state) => state.productList)
+    // Fetch product list.
     const { isLoading: loading, isError: error, data } = useListProductQuery('', pageNumber)
 
+    // Get user's login info. Force login.
+    const { userInfo } = useSelector((state) => state.userLogin)
     useEffect(() => {
-        dispatch(resetProductCreate)
-
         if (userInfo && !userInfo.isAdmin) {
             navigate('/login')
         }
 
+        // When a sample product is created, redirect to edit page.
         if (successCreate) {
             navigate(`/admin/product/${createdProduct._id}/edit`)
-        } else {
-            // dispatch(listProducts({ keyword: '', pageNumber }))
         }
-    }, [dispatch, navigate, userInfo, successDelete, successCreate, createdProduct, pageNumber])
+    }, [navigate, userInfo, successDelete, successCreate, createdProduct, pageNumber])
 
-    const delteHandler = (id) => {
+    // Delete a product.
+    const deleteHandler = (id) => {
         if (window.confirm('Are you sure?')) {
-            // dispatch(deleteProduct(id))
             deleteProduct(id)
         }
     }
 
+    // Create a sample product to be editted.
     const createProductHandler = () => {
-        // dispatch(createProduct())
         createProduct()
     }
 
@@ -91,7 +72,7 @@ const ProductListScreen = () => {
                 <Loader></Loader>
             ) : error ? (
                 <Message vairant='danger'>{error}</Message>
-            ) : (
+            ) : data ? (
                 <>
                     <Table striped bordered hover responsive className='table-sm'>
                         <thead>
@@ -123,7 +104,7 @@ const ProductListScreen = () => {
                                         <Button
                                             variant='danger'
                                             className='btn-sm'
-                                            onClick={() => delteHandler(product._id)}
+                                            onClick={() => deleteHandler(product._id)}
                                         >
                                             <i className='fas fa-trash'></i>
                                         </Button>
@@ -134,7 +115,7 @@ const ProductListScreen = () => {
                     </Table>
                     <Paginate pages={data.pages} page={data.page} isAdmin={true}></Paginate>
                 </>
-            )}
+            ) : null}
         </>
     )
 }
