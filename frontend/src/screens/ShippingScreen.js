@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,10 +6,11 @@ import FormContainer from '../components/FormContainer'
 import CheckoutSteps from '../components/CheckoutSteps'
 import { saveShippingAddress } from '../slices/cartSlice'
 
+// Input shipping data.
 const ShippingScreen = () => {
-    const cart = useSelector((state) => state.cart)
-    const { shippingAddress } = cart
+    const { shippingAddress } = useSelector((state) => state.cart)
 
+    // Form data.
     const [address, setAddress] = useState(shippingAddress.address)
     const [city, setCity] = useState(shippingAddress.city)
     const [postalCode, setPostalCode] = useState(shippingAddress.postalCode)
@@ -18,6 +19,16 @@ const ShippingScreen = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    // Get user's login info.
+    const { userInfo } = useSelector((state) => state.userLogin)
+
+    useEffect(() => {
+        if (!userInfo) {
+            navigate('/login') // Force login.
+        }
+    }, [userInfo, navigate])
+
+    // Save shipping address and go to next page.
     const submitHandler = (e) => {
         e.preventDefault()
         dispatch(saveShippingAddress({ address, city, postalCode, country }))
@@ -73,6 +84,7 @@ const ShippingScreen = () => {
                     ></Form.Control>
                 </Form.Group>
 
+                {/* Save shipping address and go to next page. */}
                 <Button type='submit' variant='primary'>
                     Continue
                 </Button>

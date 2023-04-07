@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'react-bootstrap'
 import { useParams, Link } from 'react-router-dom'
 import Product from '../components/Product'
@@ -8,24 +6,19 @@ import Loader from '../components/Loader'
 import Paginate from '../components/Paginate'
 import ProductCarousel from '../components/ProductCarousel'
 import Meta from '../components/Meta'
-import { listProducts } from '../slices/productSlice'
+import { useListProductQuery } from '../services/api'
 
+// Home page of the site. Shows all products and a top rated carousel.
 const HomeScreen = () => {
-    const { keyword } = useParams()
-
-    let { pageNumber = 1 } = useParams()
-
-    const { loading, error, products, pages, page } = useSelector((state) => state.productList)
-
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        dispatch(listProducts({ keyword, pageNumber }))
-    }, [dispatch, keyword, pageNumber])
+    // Get params from url.
+    const { keyword = '', pageNumber = 1 } = useParams()
+    // Fetch products.
+    const { isLoading: loading, isError: error, data } = useListProductQuery(keyword, pageNumber)
 
     return (
         <>
             <Meta></Meta>
+            {/* Show product carousel if there isn't a search word. */}
             {!keyword ? (
                 <ProductCarousel></ProductCarousel>
             ) : (
@@ -38,18 +31,18 @@ const HomeScreen = () => {
                 <Loader />
             ) : error ? (
                 <Message variant='danger'>{error}</Message>
-            ) : (
+            ) : data ? (
                 <>
                     <Row>
-                        {products.map((product) => (
+                        {data.products.map((product) => (
                             <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
                                 <Product product={product} />
                             </Col>
                         ))}
                     </Row>
-                    <Paginate pages={pages} page={page} keyword={keyword ? keyword : ''}></Paginate>
+                    <Paginate pages={data.pages} page={data.page} keyword={keyword ? keyword : ''}></Paginate>
                 </>
-            )}
+            ) : null}
         </>
     )
 }

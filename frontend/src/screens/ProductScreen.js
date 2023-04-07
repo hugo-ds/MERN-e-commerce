@@ -1,56 +1,57 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap'
 import Rating from '../components/Rating'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import Meta from '../components/Meta'
-import { listProductDetails, resetProductCreateReview, createProductReview } from '../slices/productSlice'
+import { useCreateProductReviewMutation, useListProductDetailsQuery } from '../services/api'
 
+// Product details.
 const ProductScreen = () => {
-    const [qty, setQty] = useState(1) // Set quantity to 1.
+    const [qty, setQty] = useState(1) // Default quantity is 1.
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState('')
 
-    const dispatch = useDispatch()
-
-    // Get state variables.
+    // Get user's login info.
     const { userInfo } = useSelector((state) => state.userLogin)
-    const { loading, error, product } = useSelector((state) => state.productDetails)
-    const { error: errorProductReview, success: successProductReview } = useSelector(
-        (state) => state.productCreateReview
-    )
 
-    // Specify key in "const {key}" and get that parameter with "userParams()".
-    const { id } = useParams()
+    // Declare create product review mutation and its result data
+    const [createProductReview, { isError: errorProductReview, isSuccess: successProductReview }] =
+        useCreateProductReviewMutation()
+
+    const { id } = useParams() // Get id from url.
+
+    // Fetch product details.
+    const {
+        isLoading: loading,
+        isError: error,
+        data: product,
+        refetch: refetchListProductDetails,
+    } = useListProductDetailsQuery(id)
+
     const navigate = useNavigate()
 
+    // Add a product detail.
     useEffect(() => {
         if (successProductReview) {
             alert('Review submitted.')
             setRating(0)
             setComment('')
-            dispatch(resetProductCreateReview())
+            refetchListProductDetails() // Fetch updated review.
         }
-        dispatch(listProductDetails(id))
-    }, [dispatch, id, successProductReview])
+    }, [refetchListProductDetails, successProductReview])
 
+    // Add the product to the cart.
     const addToCartHandler = () => {
         navigate(`/cart/${id}?qty=${qty}`)
     }
 
+    // Create a product review.
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(
-            createProductReview({
-                id,
-                review: {
-                    rating,
-                    comment,
-                },
-            })
-        )
+        createProductReview({ id, review: { rating, comment } })
     }
 
     return (
@@ -62,7 +63,7 @@ const ProductScreen = () => {
                 <Loader />
             ) : error ? (
                 <Message variant='danger'>{error}</Message>
-            ) : (
+            ) : product ? (
                 <>
                     <Meta title={product.name}></Meta>
                     <Row>
@@ -75,7 +76,10 @@ const ProductScreen = () => {
                                     <h3>{product.name}</h3>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    <Rating value={product.rating} text={`${product.numReviews} reviews`}></Rating>
+                                    <Rating
+                                        value={Number(product.rating)}
+                                        text={`${product.numReviews} reviews`}
+                                    ></Rating>
                                 </ListGroup.Item>
                                 <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
                                 <ListGroup.Item>Description: {product.description}</ListGroup.Item>
@@ -120,6 +124,7 @@ const ProductScreen = () => {
                                         </ListGroup.Item>
                                     )}
 
+                                    {/* Add product to cart */}
                                     <ListGroup.Item>
                                         <Button
                                             onClick={addToCartHandler}
@@ -142,7 +147,7 @@ const ProductScreen = () => {
                                 {product.reviews.map((review) => (
                                     <ListGroup.Item key={review._id}>
                                         <strong>{review.name}</strong>
-                                        <Rating value={review.rating}></Rating>
+                                        <Rating value={Number(review.rating)}></Rating>
                                         <p>{review.createdAt.substring(0, 10)}</p>
                                         <p>{review.comment}</p>
                                     </ListGroup.Item>
@@ -150,6 +155,7 @@ const ProductScreen = () => {
                                 <ListGroup.Item>
                                     <h2>Write a Customer Review</h2>
                                     {errorProductReview && <Message>{errorProductReview}</Message>}
+                                    {/* Can add a review if is logged in. */}
                                     {userInfo ? (
                                         <Form onSubmit={submitHandler}>
                                             <Form.Group controlId='rating'>
@@ -181,6 +187,7 @@ const ProductScreen = () => {
                                             </Button>
                                         </Form>
                                     ) : (
+                                        // If isn't logged in, ask to login.
                                         <Message variant='info'>
                                             Please <Link to='/login'>sign in</Link> to write a review.
                                         </Message>
@@ -190,7 +197,7 @@ const ProductScreen = () => {
                         </Col>
                     </Row>
                 </>
-            )}
+            ) : null}
         </>
     )
 }

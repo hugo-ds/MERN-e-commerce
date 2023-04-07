@@ -2,22 +2,23 @@ import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Form, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { listProductDetails, resetProductUpdate, updateProduct } from '../slices/productSlice'
+import { useListProductDetailsQuery, useUpdateProductMutation } from '../services/api'
 
+// Edit a product.
 const ProductEditScreen = () => {
-    const { id: productId } = useParams()
+    const { id: productId } = useParams() // Get product id from url.
 
-    const { loading, error, product } = useSelector((state) => state.productDetails)
-    const {
-        loading: loadingUpdate,
-        error: errorUpdate,
-        success: successUpdate,
-    } = useSelector((state) => state.productUpdate)
+    // Fetch product's details.
+    const { isLoading: loading, isError: error, data: product } = useListProductDetailsQuery(productId)
 
+    // Declare product update mutation function and its result data.
+    const [updateProduct, { isLoading: loadingUpdate, isError: errorUpdate, isSuccess: successUpdate }] =
+        useUpdateProductMutation()
+
+    // Form data.
     const [name, setName] = useState('')
     const [price, setPrice] = useState(0)
     const [image, setImage] = useState('')
@@ -26,17 +27,14 @@ const ProductEditScreen = () => {
     const [countInStock, setCountInStock] = useState(0)
     const [description, setDescription] = useState('')
 
-    const dispatch = useDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
+        // If successfully updated, show product list.
         if (successUpdate) {
-            dispatch(resetProductUpdate())
             navigate('/admin/productlist')
         } else {
-            if (!product.name || product._id !== productId) {
-                dispatch(listProductDetails(productId))
-            } else {
+            if (product && product.name && product._id === productId) {
                 setName(product.name)
                 setPrice(product.price)
                 setImage(product.image)
@@ -46,7 +44,7 @@ const ProductEditScreen = () => {
                 setDescription(product.description)
             }
         }
-    }, [dispatch, navigate, productId, product, successUpdate])
+    }, [navigate, productId, product, successUpdate])
 
     // Image upload.
     const [uploading, setUploading] = useState(false)
@@ -75,7 +73,7 @@ const ProductEditScreen = () => {
     // Submit updated product data.
     const submitHandler = (e) => {
         e.preventDefault()
-        dispatch(updateProduct({ _id: productId, name, price, image, brand, category, countInStock, description }))
+        updateProduct({ _id: productId, name, price, image, brand, category, countInStock, description })
     }
 
     return (
@@ -165,6 +163,7 @@ const ProductEditScreen = () => {
                             ></Form.Control>
                         </Form.Group>
 
+                        {/* Submit updated product data. */}
                         <Button type='submit' variant='primary'>
                             Update
                         </Button>

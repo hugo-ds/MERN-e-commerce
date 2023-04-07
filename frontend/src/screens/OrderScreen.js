@@ -1,47 +1,64 @@
 import { useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import PayPalBlock from '../components/PayPalBlock'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
-import { deliverOrder, getOrderDetails, resetOrderDeliver, resetOrderPay } from '../slices/orderSlice'
+import {
+    useDeliverOrderMutation,
+    useGetOrderDetailsQuery,
+    useGetPaypalClientIdQuery,
+    usePayOrderMutation,
+} from '../services/api'
 
+// Shows an order's data. User must be logged in to see this page.
 const OrderScreen = () => {
-    const { id: orderId } = useParams()
+    const { id: orderId } = useParams() // Get order id from url.
 
-    // Extract data from state.
-    const { order, loading, error, clientId } = useSelector((state) => state.orderDetails)
-    const { success: successPay } = useSelector((state) => state.orderPay) // Rename extracted variable.
-    const { loading: loadingDeliver, success: successDeliver } = useSelector((state) => state.orderDeliver)
-    const { userInfo } = useSelector((state) => state.userLogin)
+    // Fetch order's details.
+    const {
+        data: order,
+        isLoading: loading,
+        isError: error,
+        refetch: refetchGetOrderDetails,
+    } = useGetOrderDetailsQuery(orderId)
+
+    // Fetch paypal client id.
+    const { data: clientId } = useGetPaypalClientIdQuery()
+
+    // Check
+    const { isSuccess: successPay } = usePayOrderMutation()
+
+    // Declare deliver an order function and its result data.
+    const [deliverOrder, { isLoading: loadingDeliver, isSuccess: successDeliver }] = useDeliverOrderMutation(order)
 
     const navigate = useNavigate()
-    const dispatch = useDispatch()
 
+    // Extract login state from state.
+    const { userInfo } = useSelector((state) => state.userLogin)
     useEffect(() => {
         // Force login.
         if (!userInfo) {
             navigate('/login')
         }
-        // If there is no order, or payment or deliver was successful.
+        // If there is no order, or payment or payment/deliver was successful, refetch order's details.
         if (!order || order._id !== orderId || successPay || successDeliver) {
-            dispatch(resetOrderPay())
-            dispatch(resetOrderDeliver())
-            dispatch(getOrderDetails(orderId))
+            refetchGetOrderDetails()
         }
-    }, [navigate, userInfo, dispatch, order, orderId, successPay, successDeliver])
+    }, [navigate, refetchGetOrderDetails, userInfo, order, orderId, successPay, successDeliver])
 
+    // Change an order to delivered.
     const deliverHandler = () => {
-        dispatch(deliverOrder(order))
+        deliverOrder(order)
     }
 
     return loading ? (
         <Loader></Loader>
     ) : error ? (
         <Message vairant='danger'>{error}</Message>
-    ) : (
+    ) : order ? (
         <>
             <h1>Order {orderId}</h1>
             <Row>
@@ -141,8 +158,8 @@ const OrderScreen = () => {
                                     <Col>${order.totalPrice}</Col>
                                 </Row>
                             </ListGroup.Item>
-
-                            {!order.isPaid && (
+                            {/* Shows Paypal payment block if hasn't paid yet. */}
+                            {!order.isPaid && clientId && (
                                 <ListGroup.Item>
                                     <PayPalScriptProvider
                                         options={{
@@ -154,6 +171,7 @@ const OrderScreen = () => {
                                 </ListGroup.Item>
                             )}
                             {loadingDeliver && <Loader></Loader>}
+                            {/* Shows a deliver button for admins only. */}
                             {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                                 <ListGroup.Item>
                                     <Button type='button' className='btn btn-block' onClick={deliverHandler}>
@@ -166,7 +184,7 @@ const OrderScreen = () => {
                 </Col>
             </Row>
         </>
-    )
+    ) : null
 }
 
 export default OrderScreen

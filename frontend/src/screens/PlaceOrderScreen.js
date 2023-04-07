@@ -4,12 +4,27 @@ import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import CheckoutSteps from '../components/CheckoutSteps'
 import Message from '../components/Message'
-import { createOrder, resetOrderCreate } from '../slices/orderSlice'
 import { resetCart } from '../slices/cartSlice'
+import { useCreateOrderMutation } from '../services/api'
 
+// Place order. User must be logged in to see this page.
 const PlaceOrderScreen = () => {
+    const navigate = useNavigate()
+
+    // Get user's login info. Force login.
+    const { userInfo } = useSelector((state) => state.userLogin)
+    useEffect(() => {
+        if (!userInfo) {
+            navigate('/login')
+        }
+    }, [userInfo, navigate])
+
     const cart = useSelector((state) => state.cart)
 
+    // Declare create order mutation function and its result data.
+    const [createOrder, { data: order, isSuccess: success, isError: error }] = useCreateOrderMutation()
+
+    // Add decimals to num.
     const addDecimals = (num) => {
         return (Math.round(num * 100) / 100).toFixed(2)
     }
@@ -20,34 +35,28 @@ const PlaceOrderScreen = () => {
     const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)))
     const totalPrice = (Number(itemsPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2)
 
-    const orderCreate = useSelector((state) => state.orderCreate)
-    const { order, success, error } = orderCreate
-
     const dispatch = useDispatch()
-    const navigate = useNavigate()
 
+    // If order creation was success.
     useEffect(() => {
-        if (success) {
-            dispatch(resetOrderCreate())
+        if (order && success) {
             dispatch(resetCart())
             navigate(`/order/${order._id}`)
         }
-        // eslint-disable-next-line
-    }, [dispatch, navigate, success])
+    }, [dispatch, navigate, success, order])
 
     const placeOrderHandler = () => {
-        dispatch(
-            createOrder({
-                orderItems: cart.cartItems,
-                shippingAddress: cart.shippingAddress,
-                paymentMethod: cart.paymentMethod,
-                itemsPrice: itemsPrice,
-                shippingPrice: shippingPrice,
-                taxPrice: taxPrice,
-                totalPrice: totalPrice,
-            })
-        )
+        createOrder({
+            orderItems: cart.cartItems,
+            shippingAddress: cart.shippingAddress,
+            paymentMethod: cart.paymentMethod,
+            itemsPrice: itemsPrice,
+            shippingPrice: shippingPrice,
+            taxPrice: taxPrice,
+            totalPrice: totalPrice,
+        })
     }
+
     return (
         <>
             <CheckoutSteps step1 step2 step3 step4></CheckoutSteps>
@@ -136,6 +145,7 @@ const PlaceOrderScreen = () => {
                                 </ListGroup.Item>
                             )}
 
+                            {/* Button to place (confirm) order */}
                             <ListGroup.Item>
                                 <Button
                                     type='button'

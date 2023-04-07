@@ -1,40 +1,46 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Form, Button, Row, Col } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
-import { register } from '../slices/userSlice'
+import { useRegisterMutation } from '../services/api'
 
+// User registration.
 const RegisterScreen = () => {
-    const location = useLocation()
+    const location = useLocation() // Get url.
+    // Get redirect page.
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
-    // Extract user login data from the "state".
-    const { loading, error, userInfo } = useSelector((state) => state.userRegister)
+    const [register, { isLoading: loading, isError: error }] = useRegisterMutation()
+
+    // Get user's login info.
+    const { userInfo } = useSelector((state) => state.userLogin)
 
     const navigate = useNavigate()
+
     useEffect(() => {
+        // If is already logged in, redirect.
         if (userInfo) {
             navigate(redirect)
         }
     }, [userInfo, navigate, redirect])
 
+    // Form data.
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [message, setMessage] = useState(null)
 
-    const dispatch = useDispatch()
-
+    // Register new user.
     const submitHandler = (e) => {
         e.preventDefault()
         if (password !== confirmPassword) {
             setMessage('Passwords do not match')
         } else {
-            dispatch(register({ name, email, password }))
+            register({ name, email, password })
         }
     }
 
@@ -85,10 +91,12 @@ const RegisterScreen = () => {
                     ></Form.Control>
                 </Form.Group>
 
+                {/* Register new user. */}
                 <Button type='submit' variant='primary'>
                     Register
                 </Button>
             </Form>
+            {/* Redirect to login page if already have an acount. */}
             <Row className='py-3'>
                 <Col>
                     Have an Account? <Link to={redirect ? `/login?redirect=${redirect}` : '/login'}>Login</Link>

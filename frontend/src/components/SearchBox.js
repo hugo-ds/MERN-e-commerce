@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Form, Button, InputGroup } from 'react-bootstrap'
+import { Form, Button } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 
+// Search products.
 export const SearchBox = () => {
     const [keyword, setKeyword] = useState('')
 
@@ -17,7 +18,8 @@ export const SearchBox = () => {
     }
 
     return (
-        <InputGroup>
+        // d-flex class aligns text field and button.
+        <Form onSubmit={submitHandler} className='d-flex'>
             <Form.Control
                 type='text'
                 name='q'
@@ -26,9 +28,9 @@ export const SearchBox = () => {
                 className='mr-sm-2 ml-sm-5'
             ></Form.Control>
 
-            <Button type='submit' variant='outline-success' className='p-2' onClick={submitHandler}>
+            <Button type='submit' variant='outline-success' className='p-2'>
                 Search
             </Button>
-        </InputGroup>
+        </Form>
     )
 }

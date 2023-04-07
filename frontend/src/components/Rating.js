@@ -1,5 +1,6 @@
 import { PropTypes } from 'prop-types'
 
+// Product rating
 const Rating = ({ value, text, color }) => {
     return (
         <div className='rating'>
