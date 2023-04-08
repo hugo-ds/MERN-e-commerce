@@ -11,17 +11,17 @@ const UserEditScreen = () => {
     const { id: userId } = useParams() // Get id from url.
 
     // Fetch user's details.
-    const { isLoading: loading, isError: error, data: user } = useGetUserDetailsQuery(userId)
+    const { isLoading: isLoadingUserDetails, isError: isErrorUserDetails, data: user } = useGetUserDetailsQuery(userId)
 
     // Declare update user's data mutation and its result data.
-    const [updateUser, { isLoading: loadingUpdate, isError: errorUpdate, isSuccess: successUpdate }] =
+    const [updateUser, { isLoading: isLoadingUpdate, isError: isErrorUpdate, isSuccess: isSuccessUpdate }] =
         useUpdateUserMutation()
 
     const navigate = useNavigate()
 
     useEffect(() => {
         // When user's data is updated, go to users list page.
-        if (successUpdate) {
+        if (isSuccessUpdate) {
             navigate('/admin/userlist')
         } else {
             if (user && user.name && user._id === userId) {
@@ -30,7 +30,7 @@ const UserEditScreen = () => {
                 setIsAdmin(user.isAdmin)
             }
         }
-    }, [navigate, user, userId, successUpdate])
+    }, [navigate, user, userId, isSuccessUpdate])
 
     // Form data.
     const [name, setName] = useState('')
@@ -50,12 +50,12 @@ const UserEditScreen = () => {
             </Link>
             <FormContainer>
                 <h1>Edit User</h1>
-                {loadingUpdate && <Loader></Loader>}
-                {errorUpdate && <Message>{errorUpdate}</Message>}
-                {loading ? (
+                {isLoadingUpdate && <Loader></Loader>}
+                {isErrorUpdate && <Message>{isErrorUpdate}</Message>}
+                {isLoadingUserDetails ? (
                     <Loader></Loader>
-                ) : error ? (
-                    <Message variant='danger'>{error}</Message>
+                ) : isErrorUserDetails ? (
+                    <Message variant='danger'>{isErrorUserDetails}</Message>
                 ) : (
                     <Form onSubmit={submitHandler}>
                         <Form.Group controlId='name' className='py-3'>

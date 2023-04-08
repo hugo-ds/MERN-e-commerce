@@ -10,7 +10,7 @@ import { useDeleteUserMutation, useListUsersQuery } from '../services/api'
 // List of all users. Admin only.
 const UserListScreen = () => {
     // Fetch list of all users.
-    const { isLoading: loading, isError: error, data: users } = useListUsersQuery()
+    const { isLoading, isError, data: users } = useListUsersQuery()
 
     // Declare delete a user mutation.
     const [deleteUser] = useDeleteUserMutation()
@@ -37,10 +37,10 @@ const UserListScreen = () => {
     return (
         <>
             <h1>Users</h1>
-            {loading ? (
+            {isLoading ? (
                 <Loader></Loader>
-            ) : error ? (
-                <Message vairant='danger'>{error}</Message>
+            ) : isError ? (
+                <Message vairant='danger'>{isError}</Message>
             ) : users ? (
                 <Table striped bordered hover responsive className='table-sm'>
                     <thead>

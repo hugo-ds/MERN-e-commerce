@@ -20,8 +20,8 @@ const OrderScreen = () => {
     // Fetch order's details.
     const {
         data: order,
-        isLoading: loading,
-        isError: error,
+        isLoading,
+        isError,
         refetch: refetchGetOrderDetails,
     } = useGetOrderDetailsQuery(orderId)
 
@@ -29,10 +29,10 @@ const OrderScreen = () => {
     const { data: clientId } = useGetPaypalClientIdQuery()
 
     // Check
-    const { isSuccess: successPay } = usePayOrderMutation()
+    const { isSuccess: isSuccessPay } = usePayOrderMutation()
 
     // Declare deliver an order function and its result data.
-    const [deliverOrder, { isLoading: loadingDeliver, isSuccess: successDeliver }] = useDeliverOrderMutation(order)
+    const [deliverOrder, { isLoading: isLoadingDeliver, isSuccess: isSuccessDeliver }] = useDeliverOrderMutation(order)
 
     const navigate = useNavigate()
 
@@ -44,20 +44,20 @@ const OrderScreen = () => {
             navigate('/login')
         }
         // If there is no order, or payment or payment/deliver was successful, refetch order's details.
-        if (!order || order._id !== orderId || successPay || successDeliver) {
+        if (!order || order._id !== orderId || isSuccessPay || isSuccessDeliver) {
             refetchGetOrderDetails()
         }
-    }, [navigate, refetchGetOrderDetails, userInfo, order, orderId, successPay, successDeliver])
+    }, [navigate, refetchGetOrderDetails, userInfo, order, orderId, isSuccessPay, isSuccessDeliver])
 
     // Change an order to delivered.
     const deliverHandler = () => {
         deliverOrder(order)
     }
 
-    return loading ? (
+    return isLoading ? (
         <Loader></Loader>
-    ) : error ? (
-        <Message vairant='danger'>{error}</Message>
+    ) : isError ? (
+        <Message vairant='danger'>{isError}</Message>
     ) : order ? (
         <>
             <h1>Order {orderId}</h1>
@@ -170,7 +170,7 @@ const OrderScreen = () => {
                                     </PayPalScriptProvider>
                                 </ListGroup.Item>
                             )}
-                            {loadingDeliver && <Loader></Loader>}
+                            {isLoadingDeliver && <Loader></Loader>}
                             {/* Shows a deliver button for admins only. */}
                             {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                                 <ListGroup.Item>

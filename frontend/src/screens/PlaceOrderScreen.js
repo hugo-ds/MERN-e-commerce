@@ -22,7 +22,7 @@ const PlaceOrderScreen = () => {
     const cart = useSelector((state) => state.cart)
 
     // Declare create order mutation function and its result data.
-    const [createOrder, { data: order, isSuccess: success, isError: error }] = useCreateOrderMutation()
+    const [createOrder, { data: order, isSuccess, isError }] = useCreateOrderMutation()
 
     // Add decimals to num.
     const addDecimals = (num) => {
@@ -39,11 +39,11 @@ const PlaceOrderScreen = () => {
 
     // If order creation was success.
     useEffect(() => {
-        if (order && success) {
+        if (order && isSuccess) {
             dispatch(resetCart())
             navigate(`/order/${order._id}`)
         }
-    }, [dispatch, navigate, success, order])
+    }, [dispatch, navigate, isSuccess, order])
 
     const placeOrderHandler = () => {
         createOrder({
@@ -139,9 +139,9 @@ const PlaceOrderScreen = () => {
                                 </Row>
                             </ListGroup.Item>
 
-                            {error && (
+                            {isError && (
                                 <ListGroup.Item>
-                                    <Message variant='danger'>{error}</Message>
+                                    <Message variant='danger'>{isError}</Message>
                                 </ListGroup.Item>
                             )}
 

@@ -5,12 +5,12 @@ import Loader from './Loader'
 import Message from './Message'
 
 const ProductCarousel = () => {
-    const { isLoading: loading, isError: error, data: products } = useListTopRatedProductsQuery()
+    const { isLoading, isError, data: products } = useListTopRatedProductsQuery()
 
-    return loading ? (
+    return isLoading ? (
         <Loader></Loader>
-    ) : error ? (
-        <Message>{error}</Message>
+    ) : isError ? (
+        <Message>{isError}</Message>
     ) : products ? (
         <Carousel pause='hover' className='bg-dark'>
             {products.map((product) => (

@@ -15,7 +15,7 @@ const LoginScreen = () => {
     const redirect = location.search ? '/' + location.search.split('=')[1] : '/'
 
     // Declare login function and its result data.
-    const [login, { isLoading: loading, isError: error }] = useLoginMutation()
+    const [login, { isLoading, isError }] = useLoginMutation()
 
     // Get user's login info.
     const { userInfo } = useSelector((state) => state.userLogin)
@@ -41,8 +41,8 @@ const LoginScreen = () => {
     return (
         <FormContainer>
             <h1>Sign In</h1>
-            {error && <Message variant='danger'>{error}</Message>}
-            {loading && <Loader></Loader>}
+            {isError && <Message variant='danger'>{isError}</Message>}
+            {isLoading && <Loader></Loader>}
             <Form onSubmit={submitHandler}>
                 <Form.Group controlId='email' className='py-3'>
                     <Form.Label>Email Address</Form.Label>

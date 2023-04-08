@@ -13,7 +13,7 @@ const HomeScreen = () => {
     // Get params from url.
     const { keyword = '', pageNumber = 1 } = useParams()
     // Fetch products.
-    const { isLoading: loading, isError: error, data } = useListProductQuery(keyword, pageNumber)
+    const { isLoading, isError, data } = useListProductQuery(keyword, pageNumber)
 
     return (
         <>
@@ -27,10 +27,10 @@ const HomeScreen = () => {
                 </Link>
             )}
             <h1>Latest Products</h1>
-            {loading ? (
+            {isLoading ? (
                 <Loader />
-            ) : error ? (
-                <Message variant='danger'>{error}</Message>
+            ) : isError ? (
+                <Message variant='danger'>{isError}</Message>
             ) : data ? (
                 <>
                     <Row>

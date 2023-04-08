@@ -13,7 +13,7 @@ const RegisterScreen = () => {
     // Get redirect page.
     const redirect = location.search ? location.search.split('=')[1] : '/'
 
-    const [register, { isLoading: loading, isError: error }] = useRegisterMutation()
+    const [register, { isLoading, isError }] = useRegisterMutation()
 
     // Get user's login info.
     const { userInfo } = useSelector((state) => state.userLogin)
@@ -48,8 +48,8 @@ const RegisterScreen = () => {
         <FormContainer>
             <h1>Sign Up</h1>
             {message && <Message variant='danger'>{message}</Message>}
-            {error && <Message variant='danger'>{error}</Message>}
-            {loading && <Loader></Loader>}
+            {isError && <Message variant='danger'>{isError}</Message>}
+            {isLoading && <Loader></Loader>}
             <Form onSubmit={submitHandler}>
                 <Form.Group controlId='name' className='py-3'>
                     <Form.Label>Name</Form.Label>

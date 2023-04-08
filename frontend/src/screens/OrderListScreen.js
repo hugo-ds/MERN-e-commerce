@@ -10,7 +10,7 @@ import { useListOrdersQuery } from '../services/api'
 // Show a list of all orders.
 const OrderListScreen = () => {
     // Fetch orders list.
-    const { isLoading: loading, isError: error, data: orders } = useListOrdersQuery()
+    const { isLoading, isError, data: orders } = useListOrdersQuery()
 
     // Get user login info.
     const { userInfo } = useSelector((state) => state.userLogin)
@@ -27,10 +27,10 @@ const OrderListScreen = () => {
     return (
         <>
             <h1>Orders</h1>
-            {loading ? (
+            {isLoading ? (
                 <Loader></Loader>
-            ) : error ? (
-                <Message vairant='danger'>{error}</Message>
+            ) : isError ? (
+                <Message vairant='danger'>{isError}</Message>
             ) : orders ? (
                 // Show a list of all orders.
                 <Table striped bordered hover responsive className='table-sm'>

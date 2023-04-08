@@ -12,10 +12,10 @@ const ProductEditScreen = () => {
     const { id: productId } = useParams() // Get product id from url.
 
     // Fetch product's details.
-    const { isLoading: loading, isError: error, data: product } = useListProductDetailsQuery(productId)
+    const { isLoading, isError, data: product } = useListProductDetailsQuery(productId)
 
     // Declare product update mutation function and its result data.
-    const [updateProduct, { isLoading: loadingUpdate, isError: errorUpdate, isSuccess: successUpdate }] =
+    const [updateProduct, { isLoading: isLoadingUpdate, isError: isErrorUpdate, isSuccess: isSuccessUpdate }] =
         useUpdateProductMutation()
 
     // Form data.
@@ -31,7 +31,7 @@ const ProductEditScreen = () => {
 
     useEffect(() => {
         // If successfully updated, show product list.
-        if (successUpdate) {
+        if (isSuccessUpdate) {
             navigate('/admin/productlist')
         } else {
             if (product && product.name && product._id === productId) {
@@ -44,7 +44,7 @@ const ProductEditScreen = () => {
                 setDescription(product.description)
             }
         }
-    }, [navigate, productId, product, successUpdate])
+    }, [navigate, productId, product, isSuccessUpdate])
 
     // Image upload.
     const [uploading, setUploading] = useState(false)
@@ -64,8 +64,8 @@ const ProductEditScreen = () => {
             const { data } = await axios.post('/api/upload', formData, config)
             setImage(data)
             setUploading(false)
-        } catch (error) {
-            console.log(error)
+        } catch (isError) {
+            console.log(isError)
             setUploading(false)
         }
     }
@@ -83,12 +83,12 @@ const ProductEditScreen = () => {
             </Link>
             <FormContainer>
                 <h1>Edit Product</h1>
-                {loadingUpdate && <Loader></Loader>}
-                {errorUpdate && <Message>{errorUpdate}</Message>}
-                {loading ? (
+                {isLoadingUpdate && <Loader></Loader>}
+                {isErrorUpdate && <Message>{isErrorUpdate}</Message>}
+                {isLoading ? (
                     <Loader></Loader>
-                ) : error ? (
-                    <Message>{error}</Message>
+                ) : isError ? (
+                    <Message>{isError}</Message>
                 ) : (
                     <Form onSubmit={submitHandler}>
                         <Form.Group controlId='name' className='py-3'>

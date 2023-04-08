@@ -11,13 +11,13 @@ import { useCreateProductMutation, useDeleteProductMutation, useListProductQuery
 // Shows a list of all products. Must be logged in as an admin user to see this page.
 const ProductListScreen = () => {
     // Declare delete a product mutation and its result data.
-    const [deleteProduct, { isLoading: loadingDelete, isError: errorDelete, isSuccess: successDelete }] =
+    const [deleteProduct, { isLoading: isLoadingDelete, isError: isErrorDelete, isSuccess: isSuccessDelete }] =
         useDeleteProductMutation()
 
     // Declare create a sample product mutation and its result data.
     const [
         createProduct,
-        { isLoading: loadingCreate, isError: errorCreate, isSuccess: successCreate, data: createdProduct },
+        { isLoading: isLoadingCreate, isError: isErrorCreate, isSuccess: successCreate, data: createdProduct },
     ] = useCreateProductMutation()
 
     const navigate = useNavigate()
@@ -25,7 +25,7 @@ const ProductListScreen = () => {
     let { pageNumber = 1 } = useParams() // Get current page number from url.
 
     // Fetch product list.
-    const { isLoading: loading, isError: error, data } = useListProductQuery('', pageNumber)
+    const { isLoading: isLoadingList, isError: isErrorList, data } = useListProductQuery('', pageNumber)
 
     // Get user's login info. Force login.
     const { userInfo } = useSelector((state) => state.userLogin)
@@ -38,7 +38,7 @@ const ProductListScreen = () => {
         if (successCreate) {
             navigate(`/admin/product/${createdProduct._id}/edit`)
         }
-    }, [navigate, userInfo, successDelete, successCreate, createdProduct, pageNumber])
+    }, [navigate, userInfo, isSuccessDelete, successCreate, createdProduct, pageNumber])
 
     // Delete a product.
     const deleteHandler = (id) => {
@@ -64,14 +64,14 @@ const ProductListScreen = () => {
                     </Button>
                 </Col>
             </Row>
-            {loadingCreate && <Loader></Loader>}
-            {errorCreate && <Message>{errorCreate}</Message>}
-            {loadingDelete && <Loader></Loader>}
-            {errorDelete && <Message>{errorDelete}</Message>}
-            {loading ? (
+            {isLoadingCreate && <Loader></Loader>}
+            {isErrorCreate && <Message>{isErrorCreate}</Message>}
+            {isLoadingDelete && <Loader></Loader>}
+            {isErrorDelete && <Message>{isErrorDelete}</Message>}
+            {isLoadingList ? (
                 <Loader></Loader>
-            ) : error ? (
-                <Message vairant='danger'>{error}</Message>
+            ) : isErrorList ? (
+                <Message vairant='danger'>{isErrorList}</Message>
             ) : data ? (
                 <>
                     <Table striped bordered hover responsive className='table-sm'>

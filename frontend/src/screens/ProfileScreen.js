@@ -11,19 +11,19 @@ import { useGetUserDetailsQuery, useListMyOrdersQuery, useUpdateUserProfileMutat
 const ProfileScreen = () => {
     // Fetch user's data.
     const {
-        isLoading: loading,
-        isError: error,
+        isLoading: isLoadingUserDetails,
+        isError: isErrorUserDetails,
         data: user,
         refetch: refetchGetUserDetails,
     } = useGetUserDetailsQuery('profile')
 
     // Declare update user profile mutation and its result data.
-    const [updateUserProfile, { isSuccess: success }] = useUpdateUserProfileMutation()
+    const [updateUserProfile, { isSuccess: isSuccessUpdateProfile }] = useUpdateUserProfileMutation()
 
     // Fetch user's orders list.
     const {
-        isLoading: loadingOrders,
-        isError: errorOrders,
+        isLoading: isLoadingOrders,
+        isError: isErrorOrders,
         data: orders,
         refetch: refetchListMyOrders,
     } = useListMyOrdersQuery()
@@ -45,7 +45,7 @@ const ProfileScreen = () => {
             navigate('/login') // Force login.
         } else {
             // If thre is no user data or if profile update was successful, refetch user's data.
-            if (!user || !user.name || success) {
+            if (!user || !user.name || isSuccessUpdateProfile) {
                 refetchGetUserDetails('profile')
             } else {
                 setName(user.name)
@@ -53,7 +53,7 @@ const ProfileScreen = () => {
             }
             refetchListMyOrders()
         }
-    }, [userInfo, success, user, navigate, refetchGetUserDetails, refetchListMyOrders])
+    }, [userInfo, isSuccessUpdateProfile, user, navigate, refetchGetUserDetails, refetchListMyOrders])
 
     // Update user's profile.
     const submitHandler = (e) => {
@@ -70,9 +70,9 @@ const ProfileScreen = () => {
             <Col md={3}>
                 <h2>User Profile</h2>
                 {message && <Message variant='danger'>{message}</Message>}
-                {error && <Message variant='danger'>{error}</Message>}
-                {success && <Message variant='success'>Profile updated</Message>}
-                {loading && <Loader></Loader>}
+                {isErrorUserDetails && <Message variant='danger'>{isErrorUserDetails}</Message>}
+                {isSuccessUpdateProfile && <Message variant='isSuccessUpdateProfile'>Profile updated</Message>}
+                {isLoadingUserDetails && <Loader></Loader>}
                 <Form onSubmit={submitHandler}>
                     <Form.Group controlId='name' className='py-3'>
                         <Form.Label>Name</Form.Label>
@@ -123,10 +123,10 @@ const ProfileScreen = () => {
             <Col md={9}>
                 {/* User's orders. */}
                 <h2>My Orders</h2>
-                {loadingOrders ? (
+                {isLoadingOrders ? (
                     <Loader></Loader>
-                ) : errorOrders ? (
-                    <Message vairant='danger'>{errorOrders}</Message>
+                ) : isErrorOrders ? (
+                    <Message vairant='danger'>{isErrorOrders}</Message>
                 ) : orders ? (
                     <Table striped bordered hover responsive className='table-sm'>
                         <thead>

@@ -18,15 +18,15 @@ const ProductScreen = () => {
     const { userInfo } = useSelector((state) => state.userLogin)
 
     // Declare create product review mutation and its result data
-    const [createProductReview, { isError: errorProductReview, isSuccess: successProductReview }] =
+    const [createProductReview, { isError: isErrorProductReview, isSuccess: isSuccessProductReview }] =
         useCreateProductReviewMutation()
 
     const { id } = useParams() // Get id from url.
 
     // Fetch product details.
     const {
-        isLoading: loading,
-        isError: error,
+        isLoading: isLoadingProductDetails,
+        isError: isErrorProductDetails,
         data: product,
         refetch: refetchListProductDetails,
     } = useListProductDetailsQuery(id)
@@ -35,13 +35,13 @@ const ProductScreen = () => {
 
     // Add a product detail.
     useEffect(() => {
-        if (successProductReview) {
+        if (isSuccessProductReview) {
             alert('Review submitted.')
             setRating(0)
             setComment('')
             refetchListProductDetails() // Fetch updated review.
         }
-    }, [refetchListProductDetails, successProductReview])
+    }, [refetchListProductDetails, isSuccessProductReview])
 
     // Add the product to the cart.
     const addToCartHandler = () => {
@@ -59,10 +59,10 @@ const ProductScreen = () => {
             <Link className='btn btn-light my-3' to='/'>
                 Go Back
             </Link>
-            {loading ? (
+            {isLoadingProductDetails ? (
                 <Loader />
-            ) : error ? (
-                <Message variant='danger'>{error}</Message>
+            ) : isErrorProductDetails ? (
+                <Message variant='danger'>{isErrorProductDetails}</Message>
             ) : product ? (
                 <>
                     <Meta title={product.name}></Meta>
@@ -154,7 +154,7 @@ const ProductScreen = () => {
                                 ))}
                                 <ListGroup.Item>
                                     <h2>Write a Customer Review</h2>
-                                    {errorProductReview && <Message>{errorProductReview}</Message>}
+                                    {isErrorProductReview && <Message>{isErrorProductReview}</Message>}
                                     {/* Can add a review if is logged in. */}
                                     {userInfo ? (
                                         <Form onSubmit={submitHandler}>
