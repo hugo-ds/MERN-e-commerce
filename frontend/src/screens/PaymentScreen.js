@@ -4,6 +4,7 @@ import { Form, Button, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import FormContainer from '../components/FormContainer'
 import CheckoutSteps from '../components/CheckoutSteps'
+import Meta from '../components/Meta'
 import { savePaymentMethod } from '../slices/cartSlice'
 
 // Choose payment method. User must be logged in to see this page.
@@ -38,25 +39,28 @@ const PaymentScreen = () => {
     }
 
     return (
-        <FormContainer>
-            <CheckoutSteps step1 step2 step3></CheckoutSteps>
-            <h1>PaymentMethod</h1>
-            <Form onSubmit={submitHandler}>
-                <Form.Group>
-                    <Form.Label as='legend'>Select Method</Form.Label>
-                    <Col>
-                        {/* Choose payment method. Currently, only paypal is available. */}
-                        <Form.Check
-                            type='radio'
-                            label='PayPal or Credit Card'
-                            id='PayPal'
-                            name='paymentMethod'
-                            value='Paypal'
-                            checked
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                        ></Form.Check>
+        <>
+            <Meta title='Payment'></Meta>
 
-                        {/* <Form.Check
+            <FormContainer>
+                <CheckoutSteps step1 step2 step3></CheckoutSteps>
+                <h1>PaymentMethod</h1>
+                <Form onSubmit={submitHandler}>
+                    <Form.Group>
+                        <Form.Label as='legend'>Select Method</Form.Label>
+                        <Col>
+                            {/* Choose payment method. Currently, only paypal is available. */}
+                            <Form.Check
+                                type='radio'
+                                label='PayPal or Credit Card'
+                                id='PayPal'
+                                name='paymentMethod'
+                                value='Paypal'
+                                checked
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                            ></Form.Check>
+
+                            {/* <Form.Check
                             type='radio'
                             label='Stripe'
                             id='Stripe'
@@ -64,15 +68,16 @@ const PaymentScreen = () => {
                             value='Stripe'
                             onChange={(e) => setPaymentMethod(e.target.value)}
                         ></Form.Check> */}
-                    </Col>
-                </Form.Group>
+                        </Col>
+                    </Form.Group>
 
-                {/* Save the chosen payment method and go to the next page. */}
-                <Button type='submit' variant='primary' className='mt-2'>
-                    Continue
-                </Button>
-            </Form>
-        </FormContainer>
+                    {/* Save the chosen payment method and go to the next page. */}
+                    <Button type='submit' variant='primary' className='mt-2'>
+                        Continue
+                    </Button>
+                </Form>
+            </FormContainer>
+        </>
     )
 }
 

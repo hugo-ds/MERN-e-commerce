@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
+import Meta from '../components/Meta'
 import { useListOrdersQuery } from '../services/api'
 
 // Show a list of all orders.
@@ -26,6 +27,7 @@ const OrderListScreen = () => {
 
     return (
         <>
+            <Meta title='Orders'></Meta>
             <h1>Orders</h1>
             {isLoading ? (
                 <Loader></Loader>

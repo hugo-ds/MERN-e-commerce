@@ -5,6 +5,7 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { useGetUserDetailsQuery, useUpdateUserMutation } from '../services/api'
+import Meta from '../components/Meta'
 
 // Edit user data.
 const UserEditScreen = () => {
@@ -45,6 +46,7 @@ const UserEditScreen = () => {
 
     return (
         <>
+            <Meta title='User Edit'></Meta>
             <Link to='/admin/userlist' className='btn btn-light my-3'>
                 Go back
             </Link>

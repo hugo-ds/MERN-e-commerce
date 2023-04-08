@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { useDeleteUserMutation, useListUsersQuery } from '../services/api'
+import Meta from '../components/Meta'
 
 // List of all users. Admin only.
 const UserListScreen = () => {
@@ -36,6 +37,7 @@ const UserListScreen = () => {
 
     return (
         <>
+            <Meta title='User list'></Meta>
             <h1>Users</h1>
             {isLoading ? (
                 <Loader></Loader>

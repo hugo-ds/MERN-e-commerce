@@ -4,6 +4,7 @@ import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import CheckoutSteps from '../components/CheckoutSteps'
 import Message from '../components/Message'
+import Meta from '../components/Meta'
 import { resetCart } from '../slices/cartSlice'
 import { useCreateOrderMutation } from '../services/api'
 
@@ -31,7 +32,7 @@ const PlaceOrderScreen = () => {
 
     // Calculate prices.
     const itemsPrice = addDecimals(cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0))
-    const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 100)
+    const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 10)
     const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)))
     const totalPrice = (Number(itemsPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2)
 
@@ -59,6 +60,7 @@ const PlaceOrderScreen = () => {
 
     return (
         <>
+            <Meta title='Place Order'></Meta>
             <CheckoutSteps step1 step2 step3 step4></CheckoutSteps>
             <Row>
                 <Col md={8}>

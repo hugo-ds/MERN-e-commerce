@@ -2,9 +2,10 @@ import { useEffect } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { useNavigate, useParams } from 'react-router-dom'
+import Meta from '../components/Meta'
 import Paginate from '../components/Paginate'
 import { useCreateProductMutation, useDeleteProductMutation, useListProductQuery } from '../services/api'
 
@@ -54,6 +55,7 @@ const ProductListScreen = () => {
 
     return (
         <>
+            <Meta title='Product list'></Meta>
             <Row className='align-items-center'>
                 <Col>
                     <h1>Products</h1>

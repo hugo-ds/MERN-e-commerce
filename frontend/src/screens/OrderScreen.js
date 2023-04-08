@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 import PayPalBlock from '../components/PayPalBlock'
+import Meta from '../components/Meta'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import {
     useDeliverOrderMutation,
@@ -18,12 +19,7 @@ const OrderScreen = () => {
     const { id: orderId } = useParams() // Get order id from url.
 
     // Fetch order's details.
-    const {
-        data: order,
-        isLoading,
-        isError,
-        refetch: refetchGetOrderDetails,
-    } = useGetOrderDetailsQuery(orderId)
+    const { data: order, isLoading, isError, refetch: refetchGetOrderDetails } = useGetOrderDetailsQuery(orderId)
 
     // Fetch paypal client id.
     const { data: clientId } = useGetPaypalClientIdQuery()
@@ -60,6 +56,7 @@ const OrderScreen = () => {
         <Message vairant='danger'>{isError}</Message>
     ) : order ? (
         <>
+            <Meta title='Your order'></Meta>
             <h1>Order {orderId}</h1>
             <Row>
                 <Col md={8}>
