@@ -7,3 +7,10 @@
 ![RTK](https://img.shields.io/badge/mongoose-v6.7.3-red.svg?style=flat)
 
 # E-commerce site built with MERN stack
+
+[Visit the web page deployed on render.com](https://react-e-commerce-test-site.onrender.com)
+
+```
+Test user name: john@example.com
+Test user password: 123456
+```
