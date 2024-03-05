@@ -30,7 +30,8 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.12.0",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "postcss": "^8.4.35"
   },
   "devDependencies": {
     "concurrently": "^7.5.0",
