@@ -8,6 +8,8 @@
 [Visit the web page deployed on ](https://react-e-commerce-test-site.onrender.com)
 [![image](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://react-e-commerce-test-site.onrender.com)
 
+> Using free instance on render.com so page loading may take up to 1 minute
+
 <img src="./uploads/site-preview.png">
 
 ## Default user for testing
